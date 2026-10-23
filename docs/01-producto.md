@@ -91,7 +91,7 @@ Permitir que los usuarios expresen y consulten opiniones sobre temas de forma r�
 - La pestaña **Perfil** abre mi perfil: foto (o inicial), nombre, descripción, los contadores «N temas» y «N amigos» y el botón «Editar perfil».
 - **Amigos**: el contador de amigos abre mi lista de amigos, en orden alfabético, con la misma tarjeta que Personas. Como la amistad es mutua, seguidos y seguidores son la misma lista, así que se muestra una sola, «Amigos».
 - **Mis temas**: todos los temas que he creado, también los privados (marcados «Privado»), con el mismo selector «Más recientes / Más puntuados» que el perfil de una persona.
-- **Editar perfil**: cambiar o quitar la foto (JPEG, PNG o WebP de hasta 5 MB) y editar la descripción (hasta 160 caracteres). Los cambios se ven en toda la aplicación.
+- **Editar perfil**: cambiar o quitar la foto (JPEG, PNG o WebP de hasta 4 MB) y editar la descripción (hasta 160 caracteres). Los cambios se ven en toda la aplicación.
 
 ## 1.5 Flujo principal
 

@@ -31,7 +31,7 @@ describe("validateImageFile", () => {
     await expect(validateImageFile(file)).rejects.toBeInstanceOf(PayloadTooLargeError);
   });
 
-  it("Tamaño exacto de 5 MB: no se rechaza por tamaño", async () => {
+  it("Tamaño exacto de 4 MB: no se rechaza por tamaño", async () => {
     const exact = Buffer.concat([
       PNG_MINIMAL,
       Buffer.alloc(MAX_IMAGE_SIZE_BYTES - PNG_MINIMAL.length),

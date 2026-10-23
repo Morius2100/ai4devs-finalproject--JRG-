@@ -19,6 +19,10 @@ const client = new S3Client({
   // Necesario para MinIO (y cualquier S3 compatible que no use subdominios
   // por bucket): usa http://endpoint/bucket/key en vez de bucket.endpoint.
   forcePathStyle: true,
+  // Cloudflare R2 en producción (docs/08-despliegue-vercel.md): las sumas de
+  // comprobación CRC por defecto del SDK solo cuando la operación las exige.
+  requestChecksumCalculation: "WHEN_REQUIRED",
+  responseChecksumValidation: "WHEN_REQUIRED",
   credentials: {
     accessKeyId: env.S3_ACCESS_KEY_ID,
     secretAccessKey: env.S3_SECRET_ACCESS_KEY,

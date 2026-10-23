@@ -132,9 +132,9 @@ describe("PATCH /api/me: foto (TKT-061)", () => {
     expect(await stored()).toEqual(before);
   });
 
-  it("Imagen de más de 5 MB: 413 y no cambia nada", async () => {
+  it("Imagen de más de 4 MB: 413 y no cambia nada", async () => {
     const before = await stored();
-    const big = new File([Buffer.alloc(5 * 1024 * 1024 + 1)], "grande.png", { type: "image/png" });
+    const big = new File([Buffer.alloc(4 * 1024 * 1024 + 1)], "grande.png", { type: "image/png" });
 
     const response = await patch({ avatar: big, bio: "Nueva" });
 

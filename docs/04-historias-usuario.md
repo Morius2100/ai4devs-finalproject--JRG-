@@ -139,7 +139,7 @@ Formato: _Como_ <rol>, _quiero_ <acción>, _para_ <beneficio>. Cada historia inc
 **Como** creador, **quiero** adjuntar opcionalmente una imagen al tema, **para** hacerlo más atractivo.
 
 - **Prioridad:** Must · **Estimación:** 5 pts
-- **CA-09.1** El formulario permite adjuntar una imagen de forma opcional (JPEG, PNG o WebP, máximo 5 MB).
+- **CA-09.1** El formulario permite adjuntar una imagen de forma opcional (JPEG, PNG o WebP, máximo 4 MB).
 - **CA-09.2** Un tema creado con imagen la muestra en su pantalla según HU-03.
 - **CA-09.3** Un archivo de tipo o tamaño no permitido se rechaza con un mensaje y no se crea el tema.
 
@@ -278,7 +278,7 @@ Formato: _Como_ <rol>, _quiero_ <acción>, _para_ <beneficio>. Cada historia inc
 **Como** usuario, **quiero** cambiar mi foto de perfil y mi descripción, **para** que los demás me reconozcan.
 
 - **Prioridad:** Should · **Estimación:** 5 pts
-- **CA-20.1** Desde «Editar perfil» puedo elegir una foto nueva (JPEG, PNG o WebP de hasta 5 MB) con vista previa, o quitar la actual.
+- **CA-20.1** Desde «Editar perfil» puedo elegir una foto nueva (JPEG, PNG o WebP de hasta 4 MB) con vista previa, o quitar la actual.
 - **CA-20.2** Puedo editar la descripción, de hasta 160 caracteres, con un contador de los restantes; vacía, se elimina.
 - **CA-20.3** Al guardar vuelvo a mi perfil con los datos nuevos, que se ven también en Personas, en el perfil que ven los demás y en las historias.
 - **CA-20.4** Si la foto no es válida o es demasiado grande se muestra el error junto al campo y no cambia nada; «Cancelar» vuelve sin cambios.

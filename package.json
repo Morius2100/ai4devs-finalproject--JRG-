@@ -6,6 +6,7 @@
     "dev": "next dev",
     "dev:android": "node scripts/dev-android.mjs",
     "build": "next build",
+    "vercel-build": "node scripts/vercel-build.mjs",
     "start": "next start",
     "build:mobile": "node scripts/build-mobile.mjs",
     "build:mobile:dev": "node scripts/build-mobile.mjs --dev",

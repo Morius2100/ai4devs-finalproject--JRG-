@@ -191,7 +191,7 @@ Todas las rutas (salvo registro y endpoints de Auth.js) requieren sesión: la co
 | `GET /api/topics/:id`                  | —                                                                                                           | `200 TopicDetail`                              | `404` inexistente o sin acceso                  | HU-03, HU-11        |
 | `POST /api/topics/:id/votes`           | `{ value: "UP"\|"DOWN", justification?: string ≤ 500 }`                                                     | `201 { positiveVotes, negativeVotes, myVote }` | `400`, `404`, `409` ya votado                   | HU-04, HU-05        |
 | `GET /api/topics/:id/opinions?cursor=` | —                                                                                                           | `200 { items: Opinion[], nextCursor }`         | `403` si no ha votado, `404`                    | HU-07               |
-| `POST /api/topics`                     | `multipart/form-data`: `title` (3–120), `visibility` (`PUBLIC`\|`PRIVATE`), `image?` (JPEG/PNG/WebP ≤ 5 MB) | `201 { id }`                                   | `400`, `413`, `415`                             | HU-08..HU-10, HU-12 |
+| `POST /api/topics`                     | `multipart/form-data`: `title` (3–120), `visibility` (`PUBLIC`\|`PRIVATE`), `image?` (JPEG/PNG/WebP ≤ 4 MB) | `201 { id }`                                   | `400`, `413`, `415`                             | HU-08..HU-10, HU-12 |
 | `GET /api/notifications?cursor=`       | —                                                                                                           | `200 { items: Notification[], nextCursor }`    | —                                               | HU-12               |
 | `GET /api/users?q=&cursor=`            | `q` 1–100 caracteres (opcional)                                                                             | `200 { items: Person[], nextCursor }`          | `400`                                           | HU-13               |
 | `GET /api/media/:clave`                | `clave`: `avatars/<uuid>.<ext>` o `topics/<uuid>.<ext>` (ruta pública)                                      | `200` imagen con su `Content-Type`             | `404` clave inexistente o inválida              | HU-22               |
@@ -199,7 +199,7 @@ Todas las rutas (salvo registro y endpoints de Auth.js) requieren sesión: la co
 | `GET /api/stories`                     | —                                                                                                           | `200 { items: Story[] }`                       | —                                               | HU-19               |
 | `GET /api/me`                          | —                                                                                                           | `200 { id, username, avatarUrl, bio, topicsCount, friendsCount }` | —                                | HU-21               |
 | `GET /api/me/friends?cursor=`          | —                                                                                                           | `200 { items: Person[], nextCursor }`          | —                                               | HU-21               |
-| `PATCH /api/me`                        | `multipart/form-data`: `bio?` (≤ 160), `avatar?` (JPEG/PNG/WebP ≤ 5 MB), `removeAvatar?`                    | `200` perfil actualizado                       | `400`, `413`, `415`                             | HU-20               |
+| `PATCH /api/me`                        | `multipart/form-data`: `bio?` (≤ 160), `avatar?` (JPEG/PNG/WebP ≤ 4 MB), `removeAvatar?`                    | `200` perfil actualizado                       | `400`, `413`, `415`                             | HU-20               |
 | `GET /api/users/:id`                   | —                                                                                                           | `200 UserProfile`                              | `404` id inválido o persona inexistente         | HU-14, HU-16        |
 | `GET /api/users/:id/topics?sort=&cursor= | `sort`: `recent` (defecto) \| `top`                                                                       | `200 { items: TopicSummary[], nextCursor }`    | `400`, `404` persona inexistente                | HU-14               |
 | `PUT /api/users/:id/friendship`        | —                                                                                                           | `200 { isFriend: true }`                       | `400` uno mismo, `404`                          | HU-15               |
@@ -266,7 +266,7 @@ type Notification = {
 | **Autorización**        | `VisibilityPolicy` es el único punto que decide el acceso a un tema. Un tema privado inaccesible responde `404` para no revelar su existencia.       |
 | **Integridad del voto** | Restricción `UNIQUE (topic_id, user_id)` en BD + transacción que incrementa contadores desnormalizados.                                              |
 | **Validación**          | Esquemas Zod compartidos entre cliente y servidor (`src/lib/validation`).                                                                            |
-| **Imágenes**            | Validación de tipo por _magic bytes_ y tamaño ≤ 5 MB; clave aleatoria (`topics/<uuid>.<ext>`); se sirve por URL pública del bucket. Las fotos de perfil usan el prefijo `avatars/` (`PATCH /api/me`), y la anterior se borra al cambiarla. |
+| **Imágenes**            | Validación de tipo por _magic bytes_ y tamaño ≤ 4 MB; clave aleatoria (`topics/<uuid>.<ext>`); se sirve por URL pública del bucket. Las fotos de perfil usan el prefijo `avatars/` (`PATCH /api/me`), y la anterior se borra al cambiarla. |
 | **Rendimiento**         | Índices para tendencias y búsqueda (ver modelo de datos); scroll infinito con cursor.                                                                |
 | **Diseño responsive**   | _Mobile-first_ con Tailwind; la imagen usa `50dvh`; botones de voto fijados en la parte inferior.                                                    |
 | **Accesibilidad**       | Los colores verde/rojo se acompañan de icono 👍/👎 y texto accesible (`aria-label`) para no depender solo del color.                                 |
@@ -333,10 +333,12 @@ opina/
 ```mermaid
 flowchart LR
     Dev["Entorno local<br/>docker compose: PostgreSQL + MinIO<br/>next dev"] --> CI["CI (GitHub Actions)<br/>lint · typecheck · test · e2e · build"]
-    CI --> Prod["Producción<br/>Contenedor Next.js (Node 22)<br/>PostgreSQL gestionado<br/>Bucket S3"]
+    CI --> Prod["Producción<br/>Vercel (Next.js)<br/>Neon (PostgreSQL)<br/>Cloudflare R2 (S3)"]
 ```
 
 Variables de entorno: `DATABASE_URL`, `AUTH_SECRET`, `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_URL`.
+
+Vercel despliega desde GitHub con `npm run vercel-build` (`prisma generate`, `prisma migrate deploy` en producción por la conexión directa de Neon, `next build`). Pasos y variables: [08-despliegue-vercel.md](08-despliegue-vercel.md).
 
 ## 2.9 App Android
 

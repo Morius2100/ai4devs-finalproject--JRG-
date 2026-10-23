@@ -1,7 +1,9 @@
 import { fileTypeFromBuffer } from "file-type";
 import { PayloadTooLargeError, UnsupportedMediaTypeError } from "@/server/errors";
 
-export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+// 4 MB: la petición completa (imagen + campos) debe caber en los 4,5 MB que admite
+// una función de Vercel (docs/08-despliegue-vercel.md).
+export const MAX_IMAGE_SIZE_BYTES = 4 * 1024 * 1024;
 
 const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
@@ -39,13 +41,13 @@ export interface ImageStorage {
 }
 
 /**
- * Valida el tamaño (≤ 5 MB, comprobado antes de leer el contenido) y el
+ * Valida el tamaño (≤ 4 MB, comprobado antes de leer el contenido) y el
  * tipo real por _magic bytes_ con `file-type` (no se fía de la extensión
  * ni del MIME declarados). Usada por cada implementación de `ImageStorage`.
  */
 export async function validateImageFile(file: File): Promise<{ buffer: Buffer; ext: string }> {
   if (file.size > MAX_IMAGE_SIZE_BYTES) {
-    throw new PayloadTooLargeError("La imagen supera el tamaño máximo de 5 MB");
+    throw new PayloadTooLargeError("La imagen supera el tamaño máximo de 4 MB");
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());

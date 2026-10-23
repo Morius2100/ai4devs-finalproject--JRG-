@@ -38,7 +38,7 @@ El sistema SHALL crear el tema público, dejarlo disponible para todos los usuar
 
 ### Requirement: Imagen adjunta opcional
 
-El sistema SHALL permitir adjuntar opcionalmente una imagen JPEG, PNG o WebP de hasta 5 MB, que se mostrará en la pantalla del tema, y SHALL rechazar archivos de otro tipo o de mayor tamaño sin crear el tema. El tipo SHALL verificarse por el contenido del archivo y no solo por su extensión. Origen: HU-09 (CA-09.1–CA-09.3).
+El sistema SHALL permitir adjuntar opcionalmente una imagen JPEG, PNG o WebP de hasta 4 MB, que se mostrará en la pantalla del tema, y SHALL rechazar archivos de otro tipo o de mayor tamaño sin crear el tema. El tipo SHALL verificarse por el contenido del archivo y no solo por su extensión. Origen: HU-09 (CA-09.1–CA-09.3).
 
 #### Scenario: Tema con imagen
 

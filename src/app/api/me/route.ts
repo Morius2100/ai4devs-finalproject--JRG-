@@ -20,7 +20,8 @@ export async function GET() {
 
 // Cabecera Content-Length: rechaza pronto una petición demasiado grande sin
 // llegar a parsear el body completo (como `POST /api/topics`).
-const MAX_BODY_BYTES = 6 * 1024 * 1024;
+// 4,5 MB: el máximo que acepta una función de Vercel (imagen ≤ 4 MB + campos).
+const MAX_BODY_BYTES = 4.5 * 1024 * 1024;
 
 /**
  * PATCH /api/me — edita la foto y la descripción propias (TKT-061).

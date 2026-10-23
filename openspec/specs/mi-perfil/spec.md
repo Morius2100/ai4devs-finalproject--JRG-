@@ -72,7 +72,7 @@ Sin amigos, SHALL mostrar «Todavía no tienes amigos» y un enlace a `/personas
 El sistema SHALL ofrecer en `/perfil/editar` un formulario para cambiar la foto de perfil y la descripción:
 
 - la foto actual (o la inicial) con la vista previa de la nueva foto elegida;
-- «Cambiar foto», que admite JPEG, PNG o WebP de hasta 5 MB, validados por su contenido real;
+- «Cambiar foto», que admite JPEG, PNG o WebP de hasta 4 MB, validados por su contenido real;
 - «Quitar foto», solo si tiene foto;
 - la descripción, de hasta 160 caracteres, con un contador de caracteres restantes; guardada vacía, se elimina;
 - los botones «Guardar» y «Cancelar».
@@ -101,7 +101,7 @@ Al guardar con éxito, el sistema SHALL volver a `/perfil` con los datos nuevos.
 
 #### Scenario: Foto no válida
 - **WHEN** "ana" elige un archivo PDF, o una imagen de 6 MB, y pulsa «Guardar»
-- **THEN** el formulario muestra «Solo se permiten imágenes JPEG, PNG o WebP» o «La imagen supera el tamaño máximo de 5 MB», y ni la foto ni la descripción cambian
+- **THEN** el formulario muestra «Solo se permiten imágenes JPEG, PNG o WebP» o «La imagen supera el tamaño máximo de 4 MB», y ni la foto ni la descripción cambian
 
 ### Requirement: API de mi perfil
 
@@ -114,7 +114,7 @@ El sistema SHALL exponer para el usuario de la sesión:
   - `avatar`: imagen;
   - `removeAvatar`: `"true"`.
 
-`PATCH /api/me` SHALL devolver `200` con el perfil actualizado. SHALL responder `400` si la descripción supera 160 caracteres o si se envían a la vez `avatar` y `removeAvatar`, `413` si la imagen supera 5 MB y `415` si no es JPEG, PNG o WebP; en esos casos SHALL NOT modificar ningún dato. Ninguna respuesta SHALL incluir el email ni la contraseña. Sin sesión, todos SHALL responder `401`. Origen: HU-20 (CA-20.1–CA-20.4), HU-21 (CA-21.1, CA-21.2).
+`PATCH /api/me` SHALL devolver `200` con el perfil actualizado. SHALL responder `400` si la descripción supera 160 caracteres o si se envían a la vez `avatar` y `removeAvatar`, `413` si la imagen supera 4 MB y `415` si no es JPEG, PNG o WebP; en esos casos SHALL NOT modificar ningún dato. Ninguna respuesta SHALL incluir el email ni la contraseña. Sin sesión, todos SHALL responder `401`. Origen: HU-20 (CA-20.1–CA-20.4), HU-21 (CA-21.1, CA-21.2).
 
 #### Scenario: Leer el perfil propio
 - **WHEN** "ana" envía `GET /api/me`

@@ -23,6 +23,7 @@ Documentación técnica y planificación del proyecto **Opina**, preparada para 
 | 5   | [docs/05-tickets.md](docs/05-tickets.md)                         | Tickets de trabajo derivados de las historias                                 |
 | 6   | [docs/06-stack.md](docs/06-stack.md)                             | Stack tecnológico elegido y justificación                                     |
 | 7   | [docs/07-desglose-tareas-sdd.md](docs/07-desglose-tareas-sdd.md) | Desglose de tareas organizado para ejecución SDD                              |
+| 8   | [docs/08-despliegue-vercel.md](docs/08-despliegue-vercel.md)     | Despliegue gratuito en Vercel + Neon + Cloudflare R2 desde GitHub             |
 
 ## 3. Estructura SDD (OpenSpec)
 

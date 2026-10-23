@@ -8,7 +8,8 @@ import { toHttpResponse } from "@/server/http";
 
 // Cabecera Content-Length: rechaza pronto una petición demasiado grande sin
 // llegar a parsear el body completo (design.md de fase-5-creacion-temas).
-const MAX_BODY_BYTES = 6 * 1024 * 1024;
+// 4,5 MB: el máximo que acepta una función de Vercel (imagen ≤ 4 MB + campos).
+const MAX_BODY_BYTES = 4.5 * 1024 * 1024;
 
 /**
  * GET /api/topics — tendencias o búsqueda de temas públicos (TKT-012).
