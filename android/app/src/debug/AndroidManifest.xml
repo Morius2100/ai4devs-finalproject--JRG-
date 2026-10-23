@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo el build debug: permite HTTP sin cifrar hacia el servidor que elige el usuario en
+     tiempo de ejecución (red local). El release no incluye este archivo (TKT-070). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:networkSecurityConfig="@xml/network_security_config" />
+</manifest>

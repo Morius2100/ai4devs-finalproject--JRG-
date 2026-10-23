@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Opina</string>
+    <string name="title_activity_main">Opina</string>
+    <string name="package_name">com.opina.app</string>
+    <string name="custom_url_scheme">com.opina.app</string>
+</resources>

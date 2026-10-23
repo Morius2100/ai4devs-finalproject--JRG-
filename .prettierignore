@@ -1,0 +1,15 @@
+.next
+node_modules
+coverage
+playwright-report
+test-results
+prisma/migrations
+package-lock.json
+
+# Documentación y artefactos de OpenSpec: se mantienen con su propio formato.
+docs/
+openspec/
+
+# Export de la app y proyecto nativo de Capacitor.
+out-mobile
+android

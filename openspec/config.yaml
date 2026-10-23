@@ -1,0 +1,23 @@
+schema: spec-driven
+
+context: |
+  Proyecto: Opina — aplicación web (mobile-first) y red social basada en temas sobre los que
+  los usuarios votan (pulgar arriba / pulgar abajo) con una justificación opcional.
+  Documentación de referencia: docs/ (producto, arquitectura, modelo de datos, historias,
+  tickets, stack y desglose SDD). Toda la documentación y los artefactos se redactan en español.
+
+  Stack: Next.js 15 (App Router) + React 19 + TypeScript (strict), Tailwind CSS,
+  PostgreSQL 16 + Prisma ORM, Auth.js v5 (Credentials), Zod, almacenamiento de imágenes
+  S3-compatible (MinIO en local), Vitest + Testing Library, Playwright, Docker Compose.
+
+  Restricción clave: NO añadir funcionalidades que no estén en docs/01-producto.md.
+  Las funciones habilitantes (identificación de usuarios, relación de amistad) se limitan
+  al mínimo descrito en docs/01-producto.md §4.
+
+rules:
+  specs:
+    - Los requisitos se redactan en español usando la palabra normativa SHALL o MUST.
+    - Cada requisito debe referenciar la historia de usuario de origen (HU-XX).
+  tasks:
+    - Cada tarea debe referenciar el ticket de origen (TKT-XXX) definido en docs/05-tickets.md.
+    - Cada grupo de tareas termina con una tarea de pruebas que cubra los escenarios de la spec.

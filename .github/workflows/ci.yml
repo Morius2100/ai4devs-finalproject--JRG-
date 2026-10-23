@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  DATABASE_URL: "postgresql://opina:opina@localhost:5432/opina_test?schema=public"
+  AUTH_SECRET: "ci-test-secret-not-for-production"
+  S3_ENDPOINT: "http://localhost:9000"
+  S3_REGION: "us-east-1"
+  S3_BUCKET: "opina-images"
+  S3_ACCESS_KEY_ID: "opina"
+  S3_SECRET_ACCESS_KEY: "opina123"
+  S3_PUBLIC_URL: "http://localhost:9000/opina-images"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: opina
+          POSTGRES_PASSWORD: opina
+          POSTGRES_DB: opina_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U opina"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Aplicar migraciones (BD de pruebas)
+        run: npx prisma migrate deploy
+
+      - name: Sembrar datos de prueba
+        run: npm run prisma:seed
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests unitarios e integración
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Instalar navegadores de Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Tests end-to-end
+        run: npm run test:e2e
+
+      - name: Subir reporte de Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

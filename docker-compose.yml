@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: opina
+      POSTGRES_PASSWORD: opina
+      POSTGRES_DB: opina
+    ports:
+      # 5433 en el host: evita chocar con otro PostgreSQL local en 5432.
+      - "5433:5432"
+    volumes:
+      - opina_postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opina"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    # minio/minio y quay.io/minio/minio ya no se pueden descargar sin cuenta
+    # (MinIO restringió el registro público); bitnamilegacy es el mirror
+    # gratuito equivalente. MINIO_DEFAULT_BUCKETS crea el bucket con lectura
+    # pública al arrancar, sin necesitar un servicio `mc` aparte.
+    image: bitnamilegacy/minio:latest
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: opina
+      MINIO_ROOT_PASSWORD: opina123
+      MINIO_DEFAULT_BUCKETS: "opina-images:download"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - opina_minio_data:/bitnami/minio/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  opina_postgres_data:
+  opina_minio_data:

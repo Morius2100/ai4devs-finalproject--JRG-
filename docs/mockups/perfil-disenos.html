@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Opina · 5 diseños de Mi perfil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--page:#e9eaec;--ink:#161617;--ink2:#5f6166;--green:#017963}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Nunito,system-ui,sans-serif}
+header.page{padding:28px 24px 8px;max-width:1100px;margin:0 auto}
+header.page h1{margin:0 0 4px;font-size:26px;font-weight:800}
+header.page p{margin:0;color:var(--ink2);font-size:14px;max-width:78ch}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;max-width:1100px;margin:16px auto 0;padding:0 24px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{border:0;background:#fff;border-radius:99px;padding:10px 18px;font:800 14px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.tabs button.on{background:var(--green);color:#fff}
+.tabs button.ref{background:transparent;box-shadow:inset 0 0 0 2px #c9cbcf;color:var(--ink2)}
+.tabs button.ref.on{background:var(--ink2);box-shadow:none;color:#fff}
+.mode{margin-left:auto;display:flex;background:#fff;border-radius:99px;padding:4px}
+.mode button{border:0;background:transparent;border-radius:99px;padding:6px 14px;font:800 13px Nunito,sans-serif;color:var(--ink2);cursor:pointer}
+.mode button.on{background:var(--ink);color:#fff}
+.desc{max-width:1100px;margin:14px auto 0;padding:0 24px;font-size:14px;color:var(--ink2);min-height:40px}
+.desc b{color:var(--ink)}
+.stage{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;padding:22px 16px 10px}
+.col h4{margin:0 0 10px;text-align:center;font-size:13px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+.notes{max-width:1100px;margin:10px auto 40px;padding:0 24px;font-size:13.5px;color:var(--ink2)}
+.notes h3{color:var(--ink);font-size:15px;margin:18px 0 6px}
+.notes li{margin:4px 0}
+.notes code{background:#fff;border-radius:6px;padding:1px 5px;font-size:12.5px}
+
+/* ---------- Marco de teléfono (tokens de src/app/globals.css) ---------- */
+.phone{--yellow:#ffc244;--on-yellow:#035949;--green:#017963;--green-strong:#035949;--green-soft:#e0f0ed;
+  --surface:#fff;--muted:#f2f2f3;--ink:#161617;--ink2:#5f6166;--line:#e4e5e7;
+  --up-bg:#f0fdf4;--up-line:#bbf7d0;--up-chip:#dcfce7;--up-ink:#166534;
+  --down-bg:#fef2f2;--down-line:#fecaca;--down-chip:#fee2e2;--down-ink:#991b1b;
+  width:312px;height:650px;border-radius:38px;border:8px solid #161617;background:var(--surface);color:var(--ink);
+  overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 14px 36px rgba(0,0,0,.18)}
+.dark .phone{--yellow:#e0a92f;--on-yellow:#161617;--green:#2fae94;--green-strong:#7fd6c3;--green-soft:#12332d;
+  --surface:#121314;--muted:#1f2123;--ink:#f2f2f3;--ink2:#a3a6ab;--line:#2e3033;
+  --up-bg:rgba(5,46,22,.4);--up-line:#14532d;--up-chip:rgba(20,83,45,.5);--up-ink:#86efac;
+  --down-bg:rgba(69,10,10,.4);--down-line:#7f1d1d;--down-chip:rgba(127,29,29,.5);--down-ink:#fca5a5}
+.top{height:50px;flex:none;background:var(--yellow);display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 14px;color:var(--on-yellow)}
+.logo{display:inline-flex;align-items:center;font-weight:800;font-size:26px;letter-spacing:-.02em;line-height:1}
+.logo svg{width:.98em;height:1.05em}.logo span{margin-left:-2px}
+.burger{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;color:#161617}
+.scroll{flex:1;overflow-y:auto;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;flex:none;overflow:hidden}
+.av svg{width:100%;height:100%;display:block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button{font-family:inherit;cursor:pointer}
+h2,h3,p{margin:0}
+
+/* Menú inferior (BottomNav: amarillo con píldora blanca) */
+.nav{flex:none;background:var(--yellow);display:flex;gap:6px;padding:8px 8px 12px}
+.ni{flex:1;height:40px;border:0;border-radius:14px;background:transparent;display:flex;align-items:center;justify-content:center;gap:5px;font:600 12.5px Nunito,sans-serif;color:var(--on-yellow)}
+.ni .ic{width:19px;height:19px}
+.ni.on{background:#fff;font-weight:800;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.dark .ni.on{color:#161617}
+
+/* Botones (btn-primary / btn-secondary / blanco sobre amarillo / FriendToggle) */
+.btn{min-height:40px;border:0;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;font:800 13px Nunito,sans-serif}
+.btn .ic{width:16px;height:16px}
+.btn-p{background:#017963;color:#fff}
+.btn-s{background:var(--green-soft);color:var(--green-strong)}
+.btn-w{background:#fff;color:var(--on-yellow);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.fr{width:100%;min-height:44px;border-radius:99px;border:2px solid #017963;display:flex;align-items:center;justify-content:center;gap:7px;font:800 14px Nunito,sans-serif}
+.fr .ic{width:18px;height:18px}
+.fr.y{background:#017963;color:#fff}.fr.n{background:transparent;color:var(--green-strong)}
+.fr.on-y.n{background:#fff;color:#017963}
+.addbio{display:inline-flex;align-items:center;gap:5px;margin-top:4px;border:1.5px dashed currentColor;border-radius:99px;padding:5px 12px;background:transparent;color:inherit;font:700 12px Nunito,sans-serif;opacity:.85}
+.addbio .ic{width:13px;height:13px;stroke-width:3}
+.bio{font-size:12.5px;font-weight:600;line-height:1.4}
+
+/* Sección de temas y su orden */
+.sec{padding:16px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.sec h3{font-size:16px;font-weight:800}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.seg{display:flex;background:var(--muted);border-radius:99px;padding:3px}
+.seg button{flex:1;border:0;background:transparent;border-radius:99px;height:34px;font:700 12.5px Nunito,sans-serif;color:var(--ink2)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.seg.sm button{flex:none;height:30px;padding:0 10px;font-size:11.5px}
+.seg.vt button{flex:none;width:34px;height:30px;display:flex;align-items:center;justify-content:center}
+.seg.vt .ic{width:16px;height:16px}
+.chiprow{display:flex;gap:6px}
+.chip{height:32px;padding:0 14px;border-radius:99px;border:1.5px solid var(--line);background:transparent;font:700 12px Nunito,sans-serif;color:var(--ink2)}
+.chip.on{background:#017963;border-color:#017963;color:#fff}
+.list{display:flex;flex-direction:column;gap:8px}
+.empty{padding:20px 12px;text-align:center;font-size:13px;font-weight:600;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:10px}
+.hint{text-align:center;font-size:12.5px;font-weight:600;color:var(--ink2)}
+
+/* Tarjeta de tema (TopicListItem) */
+.tc{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:9px;background:var(--surface)}
+.tc.up,.tt.up{background:var(--up-bg);border-color:var(--up-line)}
+.tc.down,.tt.down{background:var(--down-bg);border-color:var(--down-line)}
+.th{width:52px;height:52px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;background:var(--green-soft);color:var(--green-strong)}
+.tc .tx{min-width:0;flex:1}
+.tc b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;line-height:1.25;font-weight:700;margin-bottom:5px}
+.cps{display:flex;flex-wrap:wrap;gap:4px}
+.cp{font-size:10.5px;font-weight:600;border-radius:99px;padding:2px 8px;background:var(--muted);color:var(--ink2);display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.cp .ic{width:11px;height:11px;stroke-width:2.2}
+.cp.up{background:var(--up-chip);color:var(--up-ink)}.cp.down{background:var(--down-chip);color:var(--down-ink)}
+.cp.priv{background:var(--green-soft);color:var(--green-strong);font-weight:800}
+
+/* Tarjeta de persona (PersonListItem) */
+.pc{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:16px;padding:8px 10px;background:var(--surface)}
+.pc b{flex:1;min-width:0;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--green-soft);color:var(--green-strong);display:inline-flex;align-items:center;gap:3px}
+.tag .ic{width:10px;height:10px;stroke-width:3.4}
+
+.toast{position:absolute;left:50%;bottom:74px;transform:translateX(-50%);background:#161617;color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;z-index:5}
+.dark .toast{background:#f2f2f3;color:#161617}
+.toast.show{opacity:1}
+
+/* ---------- Actual (referencia) ---------- */
+.h0{background:var(--yellow);color:var(--on-yellow);border-radius:0 0 28px 28px;padding:4px 18px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.ring-w{border:4px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.h0 h2{margin-top:6px;font-size:21px;font-weight:800}
+.h0 .bio{max-width:240px}
+.h0 .stats{display:flex;align-items:center;gap:16px;margin-top:6px;font-size:12.5px;font-weight:700}
+.h0 .stats button{border:0;background:none;color:inherit;font:700 12.5px Nunito,sans-serif;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;padding:0}
+.h0 .btn-w{margin-top:10px}
+
+/* ---------- A · Tarjeta flotante ---------- */
+.ha{background:var(--yellow);color:var(--on-yellow);border-radius:0 0 28px 28px;padding:4px 18px 46px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px}
+.ha h2{margin-top:6px;font-size:20px;font-weight:800}
+.ha .bio{max-width:250px}
+.cardA{position:relative;margin:-30px 16px 0;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,.08);display:grid;padding:10px 0}
+.sa{border:0;background:none;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 0}
+.sa+.sa{border-left:1px solid var(--line)}
+.sa b{font-size:19px;font-weight:800;line-height:1.15}
+.sa span{font-size:11.5px;font-weight:700;color:var(--ink2);display:flex;align-items:center}
+button.sa span{color:var(--green)}
+.sa span .ic{width:12px;height:12px;stroke-width:3}
+.actA{display:flex;gap:8px;padding:12px 16px 0}
+.actA .btn{flex:1;padding:0 10px;white-space:nowrap}
+
+/* ---------- B · Horizontal ---------- */
+.hb{background:var(--yellow);color:var(--on-yellow);border-radius:0 0 28px 28px;padding:4px 16px 16px}
+.hb-row{display:flex;align-items:center;gap:12px}
+.ring-w3{border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.hb-st{flex:1;display:flex;justify-content:space-around}
+.sb{border:0;background:none;color:inherit;display:flex;flex-direction:column;align-items:center;padding:4px 6px}
+.sb b{font-size:22px;font-weight:800;line-height:1.1}
+.sb span{font-size:12px;font-weight:700}
+button.sb span{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.hb h2{margin:10px 0 2px;font-size:17px;font-weight:800}
+.hb-act{display:flex;gap:8px;margin-top:12px}
+.hb-act .btn-w{flex:1}
+.hb-act .ico{flex:none;width:40px;padding:0}
+
+/* ---------- C · Pestañas ---------- */
+.hc{position:relative;background:var(--yellow);color:var(--on-yellow);border-radius:0 0 28px 28px;padding:4px 14px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px}
+.edit-c{position:absolute;right:12px;top:2px;height:32px;border:0;border-radius:99px;background:rgba(255,255,255,.6);color:#161617;display:flex;align-items:center;gap:4px;padding:0 11px;font:800 12px Nunito,sans-serif}
+.edit-c .ic{width:14px;height:14px}
+.hc h2{margin-top:6px;font-size:19px;font-weight:800}
+.hc .bio{max-width:250px}
+.tabsw{display:flex;gap:6px;width:100%;margin-top:12px;background:rgba(255,255,255,.4);border-radius:18px;padding:4px}
+.tabsw button{flex:1;height:38px;border:0;border-radius:14px;background:transparent;color:var(--on-yellow);display:flex;align-items:center;justify-content:center;gap:5px;font:600 13px Nunito,sans-serif}
+.tabsw button.on{background:#fff;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.dark .tabsw button.on{color:#161617}
+.tabsw .ic{width:17px;height:17px}
+.tabsw .n{font-size:10.5px;font-weight:800;background:rgba(0,0,0,.08);border-radius:99px;padding:1px 6px}
+.tabsw button.on .n{background:var(--yellow)}
+
+/* ---------- D · Portada ---------- */
+.cov{position:relative;height:80px;background:var(--yellow);border-radius:0 0 28px 28px;overflow:hidden}
+.cov svg{position:absolute;inset:0;width:100%;height:100%}
+.who{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding:0 16px;margin-top:-44px}
+.ring-s{border:4px solid var(--surface);box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.who .btn,.who .fr{margin-bottom:2px;width:auto;min-height:38px;padding:0 14px;font-size:13px}
+.infoD{padding:8px 16px 0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.infoD h2{font-size:20px;font-weight:800}
+.infoD .bio{color:var(--ink2)}
+.infoD .addbio{color:var(--green-strong)}
+.chd{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.cd{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 12px;border:0;border-radius:99px;background:var(--green-soft);color:var(--green-strong);font:800 12px Nunito,sans-serif}
+.cd .ic{width:15px;height:15px}
+.cd .sm{width:12px;height:12px;margin-left:-2px;stroke-width:3}
+
+/* ---------- E · Galería ---------- */
+.he{background:var(--yellow);color:var(--on-yellow);border-radius:0 0 28px 28px;padding:4px 14px 14px}
+.he-row{display:flex;gap:12px;align-items:center}
+.he-tx{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.he h2{font-size:18px;font-weight:800}
+.he .bio{font-size:12px}
+.te{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tl{height:54px;border:0;border-radius:16px;background:rgba(255,255,255,.55);color:var(--on-yellow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.tl b{font-size:18px;font-weight:800;line-height:1.1}
+.tl span{font-size:11.5px;font-weight:700}
+.tl .ic{width:20px;height:20px}
+.tl.wide{grid-column:span 2;flex-direction:row;gap:6px}
+.tl.wide span{font-size:13.5px;font-weight:800}
+.tl.wide.y{background:#017963;color:#fff}.tl.wide.n{background:#fff;color:#017963}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tt{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+.tt .im{position:relative;height:84px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;background:var(--green-soft);color:var(--green-strong)}
+.tt .im .cp{position:absolute;left:6px;top:6px}
+.vb{position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 0 2px var(--surface)}
+.vb.up{background:#15803d}.vb.down{background:#dc2626}
+.vb .ic{width:13px;height:13px;stroke-width:2.6}
+.tt .bd{padding:7px 8px 8px;display:flex;flex-direction:column;gap:5px}
+.tt b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:31px;font-size:12.5px;line-height:1.25;font-weight:700}
+.tt.new{min-height:150px;align-items:center;justify-content:center;gap:6px;border:2px dashed var(--line);background:transparent;color:var(--green-strong);font:800 13px Nunito,sans-serif}
+.tt.new .ic{width:26px;height:26px}
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>Opina · Mi perfil: 5 diseños</h1>
+  <p>Todos conservan la cabecera y el menú inferior amarillos, la tipografía Nunito, los botones en píldora y las tarjetas de tema actuales; solo cambia cómo se organiza la pantalla de perfil. Cada diseño se ve en tres casos: <b>mi perfil</b>, <b>una cuenta nueva</b> (sin foto, descripción ni temas) y el <b>perfil de otra persona</b>, que comparte la cabecera. Son interactivos: cambia el orden, las pestañas (C), la vista cuadrícula/lista (E), el check de amistad y el modo oscuro.</p>
+</header>
+<div class="bar">
+  <nav class="tabs" id="tabs"></nav>
+  <div class="mode" id="mode"><button data-mode="light" class="on">Claro</button><button data-mode="dark">Oscuro</button></div>
+</div>
+<p class="desc" id="desc"></p>
+<div class="stage" id="stage"></div>
+<section class="notes">
+  <h3>Qué implicaría cada diseño</h3>
+  <ul>
+    <li><b>Componentes afectados:</b> <code>ProfileHeader</code> (compartido con <code>/persona</code>), <code>MyProfileScreen</code> y, según el diseño, <code>ProfileTopics</code> / <code>SortSelector</code>. <code>TopicListItem</code> y <code>PersonListItem</code> se reutilizan tal cual.</li>
+    <li><b>A</b> muestra «Votos recibidos» (suma de votos de mis temas): sería un campo nuevo en <code>GET /api/me</code>. Sin él, la tarjeta queda en dos columnas (Temas · Amigos).</li>
+    <li><b>A, B, D y E</b> muestran contadores en el perfil de otra persona (temas, votos). <code>UserProfile</code> no los devuelve hoy: habría que añadirlos o mostrar ese perfil sin contadores, como ahora.</li>
+    <li><b>C</b> lista los amigos dentro del perfil con <code>GET /api/me/friends</code>, que ya existe; <code>/perfil/amigos</code> podría quedarse como enlace directo o retirarse.</li>
+    <li><b>E</b> no necesita datos nuevos: la cuadrícula usa la misma imagen o inicial, el total de votos y el voto propio que ya trae cada tema.</li>
+    <li>Los teléfonos están a escala reducida; en la implementación todo lo pulsable mantiene el mínimo de 44 × 44 px y el contraste de 4.5:1 que pide la identidad visual.</li>
+  </ul>
+</section>
+
+<script>
+const ME={u:"lucia_fdez",bio:"Opino de cine, series y de todo lo que se ponga por delante. Team pizza con piña.",photo:"p1",topics:5,friends:34,votes:"528"};
+const NEW={u:"marcos_v",bio:null,photo:null,topics:0,friends:0,votes:"0"};
+const OTHER={u:"carmen_r",bio:"Libros, café y debates largos. Pregúntame lo que quieras.",photo:"p2",topics:3,votes:"246"};
+const MY_TOPICS=[
+ {t:"¿Pizza con piña: sí o no?",v:128,ago:"hace 2 d",h:48,img:"pizza",my:"UP",up:81,down:47},
+ {t:"El mejor videojuego de 2026",v:94,ago:"hace 5 d",h:120,priv:true},
+ {t:"¿Teletrabajo o volver a la oficina?",v:211,ago:"24 sept",h:168,img:"office",my:"DOWN",up:139,down:72},
+ {t:"Pan con tomate en el desayuno",v:37,ago:"hace 3 h",h:3},
+ {t:"¿Las series deberían estrenarse de golpe?",v:58,ago:"20 sept",h:260,img:"tv"}
+];
+const OTHER_TOPICS=[
+ {t:"¿Libro en papel o ebook?",v:73,ago:"hace 1 d",h:24,img:"books",my:"UP",up:52,down:21},
+ {t:"El café, ¿solo o con leche?",v:142,ago:"hace 4 d",h:96},
+ {t:"¿Clubs de lectura online o presenciales?",v:31,ago:"18 sept",h:300,img:"club"}
+];
+const FRIENDS=[{u:"carmen_r",photo:"p2"},{u:"hugo.s"},{u:"iago_perez"},{u:"noa.castro"},{u:"sofilema"}];
+const IMG={
+ pizza:"radial-gradient(circle at 30% 32%,#ffe08a 0 13%,transparent 14%),radial-gradient(circle at 66% 60%,#c2410c 0 12%,transparent 13%),radial-gradient(circle at 36% 72%,#c2410c 0 9%,transparent 10%),linear-gradient(135deg,#f6b04a,#e07a2f)",
+ office:"linear-gradient(180deg,#9cc7e8 0 55%,#5b7da0 55% 100%)",
+ tv:"radial-gradient(circle at 50% 45%,rgba(255,255,255,.35) 0 20%,transparent 21%),linear-gradient(135deg,#6d28d9,#1d4ed8)",
+ books:"repeating-linear-gradient(90deg,#c2410c 0 8px,#a16207 8px 14px,#0f766e 14px 22px,#be185d 22px 28px)",
+ club:"radial-gradient(circle at 70% 30%,rgba(255,255,255,.3) 0 16%,transparent 17%),linear-gradient(135deg,#15803d,#0f766e)"
+};
+const VARIANTS={
+ x:{name:"Actual",ref:true,desc:"<b>Diseño actual</b>, como referencia para comparar: cabecera amarilla centrada, contadores en texto («5 temas · 34 amigos») y botón blanco «Editar perfil»; debajo «Mis temas» con el control segmentado."},
+ a:{name:"A · Tarjeta flotante",desc:"<b>Evolución directa del actual.</b> La cabecera amarilla centrada se mantiene, pero los contadores salen a una tarjeta blanca que se solapa con su borde (Temas · Amigos · Votos recibidos). Debajo, dos acciones en píldora: «Editar perfil» (secundaria, verde suave) y «Crear tema» (principal, verde)."},
+ b:{name:"B · Horizontal",desc:"<b>Estilo Instagram.</b> Foto a la izquierda y los números grandes a la derecha; nombre y descripción debajo. Botón blanco «Editar perfil» y un acceso directo a crear tema. El orden de los temas pasa a un selector compacto junto al título para ganar altura."},
+ c:{name:"C · Pestañas",desc:"<b>Temas y Amigos en la misma pantalla.</b> La cabecera termina en un selector con el mismo estilo que el menú inferior (píldora blanca sobre amarillo). Los amigos se ven dentro del perfil sin cambiar de pantalla; el orden de los temas va en chips y «Editar» queda como píldora en la esquina."},
+ d:{name:"D · Portada",desc:"<b>Portada con el símbolo de Opina.</b> Franja amarilla con los anillos del logo como textura, foto solapada a la izquierda y «Editar perfil» a su lado. Nombre y descripción alineados a la izquierda y los contadores como chips verdes con icono."},
+ e:{name:"E · Galería",desc:"<b>Temas en cuadrícula.</b> Cabecera horizontal compacta con tres accesos (Temas, Amigos, Editar). Los temas se ven en 2 columnas con la imagen grande, una insignia con tu voto y la etiqueta «Privado»; el icono junto al título cambia a la lista de siempre."}
+};
+const I={
+ chat:'<path d="M4 5h16v11H9.5L4 20z"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17.2 14.2c2.6.2 4.3 2 4.3 4.8"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>',
+ pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ check:'<path d="m5 12.5 4.5 4.5L19 7"/>',
+ chev:'<path d="m9 6 6 6-6 6"/>',
+ grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+ list:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ burger:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+ up:'<path d="M7 11v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3a4 4 0 0 0 4-4V6a2 2 0 0 1 4 0v5h3a2 2 0 0 1 2 2l-1 5a2 3 0 0 1-2 2h-7a3 3 0 0 1-3-3"/>'
+};
+I.down=`<g transform="rotate(180 12 12)">${I.up}</g>`;
+const ic=(n,cls="",sw)=>`<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true"${sw?` style="stroke-width:${sw}"`:""}>${I[n]}</svg>`;
+const LOGO='<span class="logo"><svg viewBox="0 0 60 64"><circle cx="30" cy="28" r="22" fill="none" stroke="currentColor" stroke-width="11"/><path d="M12 42L5 60L26 48z" fill="currentColor"/></svg><span>pina</span></span>';
+const RINGS='<svg viewBox="0 0 300 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="12"><circle cx="48" cy="20" r="18"/><circle cx="255" cy="38" r="30"/><circle cx="160" cy="-4" r="12"/></g><g fill="#fff" fill-opacity=".3"><path d="M33 33.5L27.5 48L44.7 38.4z"/><path d="M230.5 57L221 81.6L249.5 65z"/></g></svg>';
+
+/* Mismo color de respaldo que src/components/people/Avatar.tsx */
+const PLACEHOLDER_COLORS=["#c2410c","#0f766e","#6d28d9","#1d4ed8","#be185d","#15803d","#a16207","#b91c1c"];
+function placeholderColor(name){let h=0;for(const ch of name)h=(h*31+ch.charCodeAt(0))>>>0;return PLACEHOLDER_COLORS[h%PLACEHOLDER_COLORS.length]}
+function portrait(kind){
+  const k=kind==="p1"?{a:"#f4a261",b:"#e76f51",skin:"#f1c27d",hair:"#4a2c1d",top:"#017963",long:true}
+                     :{a:"#90c2e7",b:"#4f7cac",skin:"#c68642",hair:"#1f1410",top:"#ffc244",long:false};
+  return `<svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="g${kind}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${k.a}"/><stop offset="1" stop-color="${k.b}"/></linearGradient></defs><rect width="40" height="40" fill="url(#g${kind})"/>${k.long?`<path d="M11 20c-1-8 3-13 9-13s10 5 9 13c0 5 1 8 2 11H9c1-3 2-6 2-11z" fill="${k.hair}"/>`:""}<path d="M4 42c1-8 7-12 16-12s15 4 16 12z" fill="${k.top}"/><rect x="17" y="23" width="6" height="8" rx="2" fill="${k.skin}"/><ellipse cx="20" cy="18" rx="7" ry="8" fill="${k.skin}"/><path d="M13 17c0-6 3-9 7-9s7 3 7 9c-2-3-4-4-7-4s-5 1-7 4z" fill="${k.hair}"/></svg>`;
+}
+const avatar=(p,s,cls="")=>p.photo
+  ?`<span class="av ${cls}" style="width:${s}px;height:${s}px">${portrait(p.photo)}</span>`
+  :`<span class="av ${cls}" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.42)}px;background:${placeholderColor(p.u)}">${p.u.trim()[0].toUpperCase()}</span>`;
+const plural=(n,one,many)=>`${n} ${n===1?one:many}`;
+
+const S={};
+let cur="a", dark=false;
+const st=()=>S[cur]??={sort:"recent",tab:"temas",view:"grid",friend:true};
+function ctx(kind){
+  if(kind==="other") return {...OTHER,self:false,list:OTHER_TOPICS,friend:st().friend};
+  if(kind==="new") return {...NEW,self:true,list:[]};
+  return {...ME,self:true,list:MY_TOPICS};
+}
+function sorted(list){const a=[...list];return st().sort==="top"?a.sort((x,y)=>y.v-x.v):a.sort((x,y)=>x.h-y.h)}
+
+/* ----- piezas comunes ----- */
+function bioHTML(p){
+  if(p.bio) return `<p class="bio">${p.bio}</p>`;
+  if(p.self) return `<button class="addbio" data-go="/perfil/editar">${ic("plus")}Añadir descripción</button>`;
+  return "";
+}
+function friendBtn(p,cls=""){
+  return `<button class="fr ${p.friend?"y":"n"} ${cls}" data-fr aria-pressed="${p.friend}">${ic("check","",3)}${p.friend?"Amigos":"Añadir a amigos"}</button>`;
+}
+function segSort(sm){
+  const s=st().sort;
+  return `<div class="seg ${sm?"sm":""}" role="group" aria-label="Ordenar temas"><button data-sort="recent" class="${s==="recent"?"on":""}">${sm?"Recientes":"Más recientes"}</button><button data-sort="top" class="${s==="top"?"on":""}">${sm?"Puntuados":"Más puntuados"}</button></div>`;
+}
+function chipSort(){
+  const s=st().sort;
+  return `<div class="chiprow" role="group" aria-label="Ordenar temas"><button class="chip ${s==="recent"?"on":""}" data-sort="recent">Más recientes</button><button class="chip ${s==="top"?"on":""}" data-sort="top">Más puntuados</button></div>`;
+}
+function viewToggle(){
+  const v=st().view;
+  return `<div class="seg vt" role="group" aria-label="Vista"><button data-view="grid" class="${v==="grid"?"on":""}" aria-label="Cuadrícula">${ic("grid")}</button><button data-view="list" class="${v==="list"?"on":""}" aria-label="Lista">${ic("list")}</button></div>`;
+}
+function voteChips(t){
+  const tone=t.my==="UP"?"up":t.my==="DOWN"?"down":"";
+  let h=`<span class="cp ${tone}">${t.v===1?"1 voto":t.v+" votos"}</span><span class="cp">${t.ago}</span>`;
+  return {tone,h};
+}
+function topicCard(t){
+  const {tone,h}=voteChips(t);
+  const th=t.img?`<span class="th" style="background:${IMG[t.img]}"></span>`:`<span class="th">${t.t.trim()[0].toUpperCase()}</span>`;
+  const extra=(t.my?`<span class="cp up">${ic("up")}${t.up}</span><span class="cp down">${ic("down")}${t.down}</span>`:"")+(t.priv?`<span class="cp priv">Privado</span>`:"");
+  return `<div class="tc ${tone}">${th}<div class="tx"><b>${t.t}</b><div class="cps">${h}${extra}</div></div></div>`;
+}
+function topicTile(t){
+  const {tone,h}=voteChips(t);
+  const vb=t.my?`<span class="vb ${tone}" title="${t.my==="UP"?"Has votado a favor":"Has votado en contra"}">${ic(t.my==="UP"?"up":"down")}</span>`:"";
+  const priv=t.priv?`<span class="cp priv">Privado</span>`:"";
+  const im=t.img?`<div class="im" style="background:${IMG[t.img]}">${priv}${vb}</div>`:`<div class="im">${t.t.trim()[0].toUpperCase()}${priv}${vb}</div>`;
+  return `<div class="tt ${tone}">${im}<div class="bd"><b>${t.t}</b><div class="cps">${h}</div></div></div>`;
+}
+function emptyTopics(p){
+  return p.self
+    ?`<div class="empty"><p>Todavía no has creado temas.</p><button class="btn btn-p" data-go="/temas/nuevo">Crear un tema</button></div>`
+    :`<div class="empty">Esta persona todavía no tiene temas.</div>`;
+}
+function topicsSection(p,o={}){
+  const title=p.self?"Mis temas":`Temas de ${p.u}`;
+  const list=sorted(p.list);
+  const grid=o.viewToggle&&st().view==="grid";
+  let head;
+  if(o.inlineSort) head=`<div class="sh"><h3>${title}</h3>${segSort(true)}</div>`;
+  else if(o.viewToggle) head=`<div class="sh"><h3>${title}</h3>${viewToggle()}</div>${segSort()}`;
+  else head=(o.noTitle?"":`<h3>${title}</h3>`)+(o.chips?chipSort():segSort());
+  let body;
+  if(!list.length) body=grid&&p.self
+    ?`<div class="grid"><button class="tt new" data-go="/temas/nuevo">${ic("plus","",2.6)}Crear tema</button></div><p class="hint">Todavía no has creado temas.</p>`
+    :emptyTopics(p);
+  else body=grid?`<div class="grid">${list.map(topicTile).join("")}</div>`:`<div class="list">${list.map(topicCard).join("")}</div>`;
+  return `<section class="sec">${head}${body}</section>`;
+}
+function friendsSection(p){
+  if(!p.friends) return `<section class="sec"><div class="empty"><p>Todavía no tienes amigos.</p><button class="btn btn-p" data-go="/personas">Buscar personas</button></div></section>`;
+  return `<section class="sec"><div class="list">${FRIENDS.map(f=>`<div class="pc">${avatar(f,40)}<b>${f.u}</b><span class="tag">${ic("check")}Amigo</span></div>`).join("")}</div></section>`;
+}
+
+/* ----- diseños ----- */
+const R={
+ x(p){
+  const head=`<section class="h0">${avatar(p,80,"ring-w")}<h2>${p.u}</h2>${p.bio?`<p class="bio">${p.bio}</p>`:""}${p.self?`<div class="stats"><span>${plural(p.topics,"tema","temas")}</span><button data-go="/perfil/amigos">${plural(p.friends,"amigo","amigos")}</button></div><button class="btn btn-w" data-go="/perfil/editar">Editar perfil</button>`:""}</section>`;
+  return head+(p.self?"":`<div style="padding:14px 14px 0">${friendBtn(p)}</div>`)+topicsSection(p);
+ },
+ a(p){
+  const stats=p.self
+   ?[[p.topics,"Temas"],[p.friends,"Amigos","/perfil/amigos"],[p.votes,"Votos"]]
+   :[[p.topics,"Temas"],[p.votes,"Votos"]];
+  const card=`<div class="cardA" style="grid-template-columns:repeat(${stats.length},1fr)">${stats.map(([n,l,go])=>go
+    ?`<button class="sa" data-go="${go}"><b>${n}</b><span>${l}${ic("chev")}</span></button>`
+    :`<div class="sa"><b>${n}</b><span>${l}</span></div>`).join("")}</div>`;
+  const act=p.self
+   ?`<div class="actA"><button class="btn btn-s" data-go="/perfil/editar">${ic("pencil")}Editar perfil</button><button class="btn btn-p" data-go="/temas/nuevo">${ic("plus","",2.8)}Crear tema</button></div>`
+   :`<div class="actA">${friendBtn(p)}</div>`;
+  return `<section class="ha">${avatar(p,80,"ring-w")}<h2>${p.u}</h2>${bioHTML(p)}</section>${card}${act}${topicsSection(p)}`;
+ },
+ b(p){
+  const stats=p.self
+   ?[[p.topics,p.topics===1?"tema":"temas"],[p.friends,p.friends===1?"amigo":"amigos","/perfil/amigos"]]
+   :[[p.topics,"temas"],[p.votes,"votos"]];
+  const st_=stats.map(([n,l,go])=>go?`<button class="sb" data-go="${go}"><b>${n}</b><span>${l}</span></button>`:`<div class="sb"><b>${n}</b><span>${l}</span></div>`).join("");
+  const act=p.self
+   ?`<button class="btn btn-w" data-go="/perfil/editar">${ic("pencil")}Editar perfil</button><button class="btn btn-w ico" data-go="/temas/nuevo" aria-label="Crear tema">${ic("plus","",2.8)}</button>`
+   :friendBtn(p,"on-y");
+  return `<section class="hb"><div class="hb-row">${avatar(p,76,"ring-w3")}<div class="hb-st">${st_}</div></div><h2>${p.u}</h2>${bioHTML(p)}<div class="hb-act">${act}</div></section>${topicsSection(p,{inlineSort:true})}`;
+ },
+ c(p){
+  const s=st();
+  let hero=`<section class="hc">${p.self?`<button class="edit-c" data-go="/perfil/editar">${ic("pencil")}Editar</button>`:""}${avatar(p,66,"ring-w")}<h2>${p.u}</h2>${bioHTML(p)}`;
+  hero+=p.self
+   ?`<div class="tabsw" role="tablist"><button role="tab" aria-selected="${s.tab==="temas"}" class="${s.tab==="temas"?"on":""}" data-tab="temas">${ic("chat")}Temas<span class="n">${p.topics}</span></button><button role="tab" aria-selected="${s.tab==="amigos"}" class="${s.tab==="amigos"?"on":""}" data-tab="amigos">${ic("users")}Amigos<span class="n">${p.friends}</span></button></div>`
+   :`<div style="width:100%;margin-top:10px">${friendBtn(p,"on-y")}</div>`;
+  hero+=`</section>`;
+  if(p.self&&s.tab==="amigos") return hero+friendsSection(p);
+  return hero+topicsSection(p,{chips:true,noTitle:p.self});
+ },
+ d(p){
+  const btn=p.self
+   ?`<button class="btn btn-s" data-go="/perfil/editar">${ic("pencil")}Editar perfil</button>`
+   :friendBtn(p);
+  const chips=p.self
+   ?`<span class="cd">${ic("chat")}${plural(p.topics,"tema","temas")}</span><button class="cd" data-go="/perfil/amigos">${ic("users")}${plural(p.friends,"amigo","amigos")}${ic("chev","sm")}</button>`
+   :`<span class="cd">${ic("chat")}${plural(p.topics,"tema","temas")}</span><span class="cd">${ic("up")}${p.votes} votos</span>`;
+  return `<div class="cov">${RINGS}</div><div class="who">${avatar(p,88,"ring-s")}${btn}</div><div class="infoD"><h2>${p.u}</h2>${bioHTML(p)}<div class="chd">${chips}</div></div>${topicsSection(p)}`;
+ },
+ e(p){
+  const tiles=p.self
+   ?`<div class="tl"><b>${p.topics}</b><span>Temas</span></div><button class="tl" data-go="/perfil/amigos"><b>${p.friends}</b><span>Amigos ›</span></button><button class="tl" data-go="/perfil/editar">${ic("pencil")}<span>Editar</span></button>`
+   :`<div class="tl"><b>${p.topics}</b><span>Temas</span></div><button class="tl wide ${p.friend?"y":"n"}" data-fr aria-pressed="${p.friend}">${ic("check","",3)}<span>${p.friend?"Amigos":"Añadir a amigos"}</span></button>`;
+  return `<section class="he"><div class="he-row">${avatar(p,64,"ring-w3")}<div class="he-tx"><h2>${p.u}</h2>${bioHTML(p)}</div></div><div class="te">${tiles}</div></section>${topicsSection(p,{viewToggle:true})}`;
+ }
+};
+
+/* ----- teléfono y montaje ----- */
+function nav(active){
+  const it=(k,icon,l)=>`<button class="ni ${active===k?"on":""}"${active===k?' aria-current="page"':""}>${ic(icon)}${l}</button>`;
+  return `<div class="nav">${it("temas","chat","Temas")}${it("personas","users","Personas")}${it("perfil","user","Perfil")}</div>`;
+}
+function phone(label,kind){
+  const p=ctx(kind);
+  return `<div class="col"><h4>${label}</h4><div class="phone"><div class="top">${LOGO}<span class="burger">${ic("burger","",2.6)}</span></div><div class="scroll">${R[cur](p)}</div>${nav(p.self?"perfil":"personas")}<div class="toast"></div></div></div>`;
+}
+const $=s=>document.querySelector(s);
+const stage=$("#stage");
+function render(keepScroll){
+  const pos=keepScroll?[...stage.querySelectorAll(".scroll")].map(s=>s.scrollTop):[];
+  stage.className="stage"+(dark?" dark":"");
+  stage.innerHTML=phone("1 · Mi perfil","me")+phone("2 · Cuenta nueva","new")+phone("3 · Perfil de otra persona","other");
+  stage.querySelectorAll(".scroll").forEach((s,i)=>{if(pos[i])s.scrollTop=pos[i]});
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===cur));
+  $("#desc").innerHTML=VARIANTS[cur].desc;
+}
+$("#tabs").innerHTML=Object.entries(VARIANTS).map(([k,x])=>`<button data-v="${k}" class="${x.ref?"ref":""}">${x.name}</button>`).join("");
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b){cur=b.dataset.v;render(false)}});
+$("#mode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;dark=b.dataset.mode==="dark";document.querySelectorAll("#mode button").forEach(x=>x.classList.toggle("on",x===b));render(true)});
+stage.addEventListener("click",e=>{
+  const t=e.target.closest("[data-sort],[data-tab],[data-view],[data-fr],[data-go]");
+  if(!t)return;
+  const s=st();
+  if(t.dataset.sort){s.sort=t.dataset.sort;render(true)}
+  else if(t.dataset.tab){s.tab=t.dataset.tab;render(true)}
+  else if(t.dataset.view){s.view=t.dataset.view;render(true)}
+  else if(t.hasAttribute("data-fr")){s.friend=!s.friend;render(true)}
+  else if(t.dataset.go){
+    const toast=t.closest(".phone").querySelector(".toast");
+    toast.textContent="Abriría "+t.dataset.go;
+    toast.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>toast.classList.remove("show"),1400);
+  }
+});
+render(false);
+</script>
+</body>
+</html>

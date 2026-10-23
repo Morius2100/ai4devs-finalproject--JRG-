@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Verde de marca: fondo de la ventana, visible tras las barras del sistema (TKT-047). -->
+    <color name="opina_green">#035949</color>
+</resources>

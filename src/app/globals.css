@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --brand-yellow: #ffc244;
+  --on-yellow: #035949;
+  --brand-green: #017963;
+  --brand-green-strong: #035949;
+  --brand-green-soft: #e0f0ed;
+  --surface: #ffffff;
+  --surface-muted: #f2f2f3;
+  --ink: #161617;
+  --ink-muted: #5f6166;
+  --line: #e4e5e7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-yellow: #e0a92f;
+    --on-yellow: #161617;
+    --brand-green: #2fae94;
+    --brand-green-strong: #7fd6c3;
+    --brand-green-soft: #12332d;
+    --surface: #121314;
+    --surface-muted: #1f2123;
+    --ink: #f2f2f3;
+    --ink-muted: #a3a6ab;
+    --line: #2e3033;
+  }
+}
+
+@theme inline {
+  --color-brand-yellow: var(--brand-yellow);
+  --color-on-yellow: var(--on-yellow);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-strong: var(--brand-green-strong);
+  --color-brand-green-soft: var(--brand-green-soft);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--brand-green);
+    outline-offset: 2px;
+  }
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #017963;
+  padding-inline: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  transition: background-color 150ms;
+  &:hover:not(:disabled) {
+    background-color: #035949;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--brand-green-soft);
+  padding-inline: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-green-strong);
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+@utility field {
+  min-height: 2.75rem;
+  width: 100%;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-color: var(--surface-muted);
+  padding-inline: 1.25rem;
+  color: var(--ink);
+  &::placeholder {
+    color: var(--ink-muted);
+  }
+  &:focus {
+    border-color: var(--brand-green);
+    outline: none;
+  }
+}

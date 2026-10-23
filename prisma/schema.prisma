@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum VoteValue {
+  UP
+  DOWN
+}
+
+enum NotificationType {
+  PRIVATE_TOPIC_CREATED
+}
+
+model User {
+  id                 String         @id @default(uuid()) @db.Uuid
+  username           String         @unique @db.VarChar(30)
+  email              String         @unique @db.VarChar(254)
+  passwordHash       String         @map("password_hash")
+  avatarUrl          String?        @map("avatar_url")
+  bio                String?        @db.VarChar(160)
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  topics             Topic[]
+  votes              Vote[]
+  friendships        Friendship[]   @relation("UserFriendships")
+  friendOf           Friendship[]   @relation("FriendOf")
+  notifications      Notification[] @relation("NotificationRecipient")
+  actedNotifications Notification[] @relation("NotificationActor")
+  topicViews         TopicView[]
+
+  @@map("users")
+}
+
+model Friendship {
+  userId    String   @map("user_id") @db.Uuid
+  friendId  String   @map("friend_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@id([userId, friendId])
+  @@index([friendId])
+  @@map("friendships")
+}
+
+model Topic {
+  id            String         @id @default(uuid()) @db.Uuid
+  title         String         @db.VarChar(120)
+  imageUrl      String?        @map("image_url")
+  visibility    Visibility
+  authorId      String         @map("author_id") @db.Uuid
+  positiveVotes Int            @default(0) @map("positive_votes")
+  negativeVotes Int            @default(0) @map("negative_votes")
+  totalVotes    Int            @default(0) @map("total_votes")
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes         Vote[]
+  notifications Notification[]
+  views         TopicView[]
+
+  @@index([visibility, totalVotes(sort: Desc), createdAt(sort: Desc), id])
+  @@index([authorId])
+  @@map("topics")
+}
+
+model Vote {
+  id            String    @id @default(uuid()) @db.Uuid
+  topicId       String    @map("topic_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  value         VoteValue
+  justification String?   @db.VarChar(500)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  topic         Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, userId])
+  @@index([topicId, createdAt(sort: Desc)])
+  @@map("votes")
+}
+
+model TopicView {
+  userId   String   @map("user_id") @db.Uuid
+  topicId  String   @map("topic_id") @db.Uuid
+  viewedAt DateTime @default(now()) @map("viewed_at") @db.Timestamptz
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic    Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([userId, topicId])
+  @@map("topic_views")
+}
+
+model Notification {
+  id          String           @id @default(uuid()) @db.Uuid
+  recipientId String           @map("recipient_id") @db.Uuid
+  actorId     String           @map("actor_id") @db.Uuid
+  topicId     String           @map("topic_id") @db.Uuid
+  type        NotificationType
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  recipient   User             @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor       User             @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  topic       Topic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, createdAt(sort: Desc)])
+  @@map("notifications")
+}

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/xurxo/Desktop/Opina/.claude/hooks/log-prompt.cjs\"",
+            "timeout": 10,
+            "statusMessage": "Logging prompt to Prompts.md"
+          }
+        ]
+      }
+    ]
+  }
+}
