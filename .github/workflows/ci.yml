@@ -14,6 +14,8 @@ env:
   S3_ACCESS_KEY_ID: "opina"
   S3_SECRET_ACCESS_KEY: "opina123"
   S3_PUBLIC_URL: "http://localhost:9000/opina-images"
+  # El CI no levanta MinIO: las imágenes se guardan en memoria (como en .env.test).
+  IMAGE_STORAGE: "memory"
 
 jobs:
   ci:
