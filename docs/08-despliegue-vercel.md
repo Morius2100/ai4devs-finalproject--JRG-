@@ -82,10 +82,16 @@ Crea los usuarios de ejemplo (`ana@opina.test` / `password123`…). En una base 
 
 ## 8.7 Paso 6 — APK que usa el servidor publicado
 
-La APK de producción lleva fijada la URL de la API al compilar y exige HTTPS:
+La APK de producción lleva fijada la URL de la API al compilar y exige HTTPS. Por defecto apunta a `https://ai4devs-finalproject-jrg.vercel.app` (`src/lib/platform/default-server.ts`), así que basta con:
 
 ```bash
-NEXT_PUBLIC_API_URL=https://<proyecto>.vercel.app npm run build:mobile
+npm run build:mobile
+```
+
+Para otro servidor (otro proyecto de Vercel o un dominio propio), indica su URL:
+
+```bash
+NEXT_PUBLIC_API_URL=https://<otro-dominio> npm run build:mobile
 ```
 
 ```bash

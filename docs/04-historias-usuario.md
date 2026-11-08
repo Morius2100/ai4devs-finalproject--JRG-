@@ -226,6 +226,7 @@ Formato: _Como_ <rol>, _quiero_ <acción>, _para_ <beneficio>. Cada historia inc
 - **CA-16.3** El botón «atrás» de Android vuelve a la pantalla anterior y, en la pantalla principal, cierra la app.
 - **CA-16.4** Al arrancar se ve una pantalla verde con el logotipo; la barra de estado y el icono del lanzador usan la marca.
 - **CA-16.5** Sin conexión, o si la API no responde, se muestra «Sin conexión» con un botón «Reintentar», y la pantalla se recarga al volver la red.
+- **CA-16.6** El APK de producción se conecta por defecto al servidor publicado en Vercel (`https://ai4devs-finalproject-jrg.vercel.app`) sin indicar nada al compilar; una URL HTTPS indicada al compilar lo sustituye.
 
 ### HU-22 · Usar la app de desarrollo en la red local sin cable
 

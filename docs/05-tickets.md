@@ -484,3 +484,15 @@ Los tickets se derivan de las historias de usuario ([04-historias-usuario.md](04
 
 - **Descripción:** pruebas de componente de `ServerForm`, `OfflineScreen` y `NativeShell`; comprobación en el móvil sin cable.
 - **Criterios:** escenarios de `specs/app-movil` del cambio cubiertos.
+
+### APK con el servidor de Vercel por defecto (`apk-servidor-vercel-por-defecto`)
+
+#### TKT-075 · Servidor de Vercel por defecto en la APK
+
+- **Descripción:** `default-server.ts` con `DEFAULT_SERVER_URL`; `defaultServerUrl()` la usa en el build móvil sin `NEXT_PUBLIC_API_URL`; `build-mobile.mjs` la lee del mismo fichero, ya no exige la variable y rechaza URL no HTTPS en producción.
+- **Criterios:** CA-16.6; la web y `build:mobile:dev` no cambian.
+
+#### TKT-076 · Pruebas y documentación del servidor por defecto
+
+- **Descripción:** tests de `defaultServerUrl()` (móvil con y sin variable, web) y de la línea que lee el script; README y `docs/08-despliegue-vercel.md`.
+- **Criterios:** escenarios de `specs/app-movil` del cambio cubiertos.
