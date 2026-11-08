@@ -71,7 +71,7 @@ function toSummary(row: TopicRow): TopicSummary {
   return {
     id: row.id,
     title: row.title,
-    imageUrl: toMediaUrl(row.image_url),
+    imageUrl: toMediaUrl(row.image_url, { signed: row.visibility === "PRIVATE" }),
     visibility: row.visibility,
     totalVotes: row.total_votes,
     createdAt: row.created_at.toISOString(),
@@ -224,7 +224,7 @@ export const TopicService = {
     return {
       id: topic.id,
       title: topic.title,
-      imageUrl: toMediaUrl(topic.imageUrl),
+      imageUrl: toMediaUrl(topic.imageUrl, { signed: topic.visibility === "PRIVATE" }),
       visibility: topic.visibility,
       myVote: vote?.value ?? null,
       ...(vote

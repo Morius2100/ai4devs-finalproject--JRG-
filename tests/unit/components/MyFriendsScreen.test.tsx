@@ -91,7 +91,7 @@ describe("MyFriendsScreen (TKT-063)", () => {
 
 describe("FriendToggle e invalidación de Mi perfil (TKT-063)", () => {
   it("Al cambiar la amistad invalida mi perfil, mi lista de amigos y las historias", async () => {
-    vi.mocked(setFriendship).mockResolvedValue({ isFriend: true });
+    vi.mocked(setFriendship).mockResolvedValue({ status: "PENDING", isFriend: false });
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const spy = vi.spyOn(client, "invalidateQueries");
     renderWithClient(<FriendToggle userId="u1" initialIsFriend={false} />, client);

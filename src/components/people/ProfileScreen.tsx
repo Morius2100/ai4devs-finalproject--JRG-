@@ -15,7 +15,11 @@ export function ProfileScreen({ profile }: { profile: UserProfile }) {
       <ProfileHeader profile={profile} />
       {profile.isSelf ? null : (
         <div className="px-4 pt-4">
-          <FriendToggle userId={profile.id} initialIsFriend={profile.isFriend} />
+          <FriendToggle
+            userId={profile.id}
+            initialIsFriend={profile.isFriend}
+            initialFriendRequest={profile.friendRequest}
+          />
         </div>
       )}
       <ProfileTopics userId={profile.id} username={profile.username} />

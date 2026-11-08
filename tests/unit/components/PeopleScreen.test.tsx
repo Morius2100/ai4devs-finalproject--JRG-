@@ -1,12 +1,17 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { Avatar, placeholderColor } from "@/components/people/Avatar";
 import { PeopleScreen } from "@/components/people/PeopleScreen";
 import { PersonListItem } from "@/components/people/PersonListItem";
-import { fetchPeoplePage } from "@/lib/api/users";
+import {
+  acceptFriendRequest,
+  fetchFriendRequests,
+  fetchPeoplePage,
+  rejectFriendRequest,
+} from "@/lib/api/users";
 import type { PeoplePage, PersonSummary } from "@/server/services/user-service";
 
 let searchParams = new URLSearchParams();
@@ -19,6 +24,9 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/lib/api/users", () => ({
   fetchPeoplePage: vi.fn(),
+  fetchFriendRequests: vi.fn(),
+  acceptFriendRequest: vi.fn(),
+  rejectFriendRequest: vi.fn(),
 }));
 
 afterEach(() => {
@@ -113,6 +121,7 @@ describe("PeopleScreen", () => {
   function renderScreen(query: string, firstPage: PeoplePage) {
     searchParams = new URLSearchParams(query ? { q: query } : {});
     vi.mocked(fetchPeoplePage).mockResolvedValue(firstPage);
+    vi.mocked(fetchFriendRequests).mockResolvedValue({ items: [], nextCursor: null });
     return renderWithClient(<PeopleScreen />);
   }
 
@@ -145,5 +154,74 @@ describe("PeopleScreen", () => {
     expect(
       await screen.findByText("No se han encontrado personas con ese texto."),
     ).toBeInTheDocument();
+  });
+});
+
+describe("Solicitudes de amistad", () => {
+  const request: PersonSummary = {
+    id: "44444444-4444-4444-4444-444444444444",
+    username: "dani",
+    avatarUrl: null,
+    isFriend: false,
+  };
+
+  function renderWithRequests(query = "") {
+    searchParams = new URLSearchParams(query ? { q: query } : {});
+    vi.mocked(fetchPeoplePage).mockResolvedValue({ items: [stranger], nextCursor: null });
+    vi.mocked(fetchFriendRequests).mockResolvedValue({ items: [request], nextCursor: null });
+    return renderWithClient(<PeopleScreen />);
+  }
+
+  it("Muestra las solicitudes recibidas con Aceptar y Rechazar", async () => {
+    renderWithRequests();
+
+    expect(
+      await screen.findByRole("heading", { name: "Solicitudes de amistad" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Aceptar la solicitud de dani" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Rechazar la solicitud de dani" }),
+    ).toBeInTheDocument();
+  });
+
+  it("Sin solicitudes no muestra la sección", async () => {
+    searchParams = new URLSearchParams();
+    vi.mocked(fetchPeoplePage).mockResolvedValue({ items: [stranger], nextCursor: null });
+    vi.mocked(fetchFriendRequests).mockResolvedValue({ items: [], nextCursor: null });
+    renderWithClient(<PeopleScreen />);
+
+    await screen.findByText("carla");
+    expect(screen.queryByRole("heading", { name: "Solicitudes de amistad" })).toBeNull();
+  });
+
+  it("Al buscar por nombre no se muestran las solicitudes", async () => {
+    renderWithRequests("car");
+
+    await screen.findByText("carla");
+    expect(screen.queryByRole("heading", { name: "Solicitudes de amistad" })).toBeNull();
+  });
+
+  it("Aceptar llama a la API con la persona que la envió", async () => {
+    vi.mocked(acceptFriendRequest).mockResolvedValue({ status: "FRIENDS", isFriend: true });
+    renderWithRequests();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Aceptar la solicitud de dani" }));
+
+    await waitFor(() => expect(acceptFriendRequest).toHaveBeenCalledWith(request.id));
+    expect(rejectFriendRequest).not.toHaveBeenCalled();
+  });
+
+  it("Rechazar llama a la API y, si falla, avisa", async () => {
+    vi.mocked(rejectFriendRequest).mockRejectedValue(new Error("red caída"));
+    renderWithRequests();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Rechazar la solicitud de dani" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No se ha podido actualizar la solicitud",
+    );
+    expect(rejectFriendRequest).toHaveBeenCalledWith(request.id);
   });
 });

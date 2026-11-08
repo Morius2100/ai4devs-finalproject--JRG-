@@ -10,8 +10,38 @@ const images: NextConfig["images"] = {
   remotePatterns: [{ protocol: "https" as const, hostname: "picsum.photos", pathname: "/seed/**" }],
 };
 
+// Cabeceras de seguridad de la web (S-06, TKT-085). Next necesita scripts y estilos
+// en línea para hidratar, de ahí `'unsafe-inline'`; en desarrollo, además, `eval`.
+// Las imágenes salen del propio servidor (`/api/media`) y de picsum (seed).
+const isDev = process.env.NODE_ENV !== "production";
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://picsum.photos",
+  "font-src 'self' data:",
+  "connect-src 'self'",
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
+export const securityHeaders = [
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+  { key: "Strict-Transport-Security", value: "max-age=63072000" },
+];
+
 const webConfig: NextConfig = {
   images,
+  async headers() {
+    return [{ source: "/(.*)", headers: securityHeaders }];
+  },
   // Enlaces anteriores a las rutas por parámetro (TKT-045). `nuevo` no es un id.
   async redirects() {
     return [

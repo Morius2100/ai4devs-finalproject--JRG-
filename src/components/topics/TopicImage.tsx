@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { resolveMediaUrl } from "@/lib/platform/media";
+import { isSignedMediaUrl, resolveMediaUrl } from "@/lib/platform/media";
 
 /**
  * Imagen del tema en la mitad superior de la pantalla (TKT-017).
@@ -14,6 +14,7 @@ export function TopicImage({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         fill
         priority
+        unoptimized={isSignedMediaUrl(src)}
         sizes="100vw"
         className="object-cover"
       />

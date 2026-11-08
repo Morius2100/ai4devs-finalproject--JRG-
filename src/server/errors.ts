@@ -65,6 +65,18 @@ export class ConflictError extends DomainError {
   }
 }
 
+/** 429 — demasiadas peticiones; `retryAfterSeconds` va en la cabecera `Retry-After`. */
+export class RateLimitedError extends DomainError {
+  readonly code = "RATE_LIMITED";
+  readonly status = 429;
+  readonly retryAfterSeconds: number;
+
+  constructor(retryAfterSeconds: number, message = "Demasiados intentos. Inténtalo más tarde.") {
+    super(message);
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
 /** 413 — el contenido enviado excede el tamaño permitido. */
 export class PayloadTooLargeError extends DomainError {
   readonly code = "PAYLOAD_TOO_LARGE";

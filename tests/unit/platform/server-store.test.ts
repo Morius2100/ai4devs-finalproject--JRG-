@@ -128,6 +128,31 @@ describe("server-store (TKT-068)", () => {
     expect(store.currentServerUrl()).toBe("");
   });
 
+  it("Build móvil sin NEXT_PUBLIC_API_URL: usa el servidor de Vercel", async () => {
+    const store = await load({ NEXT_PUBLIC_OPINA_TARGET: "mobile" });
+    const { DEFAULT_SERVER_URL } = await import("@/lib/platform/default-server");
+
+    expect(store.defaultServerUrl()).toBe(DEFAULT_SERVER_URL);
+    expect(store.currentServerUrl()).toBe("https://ai4devs-finalproject-jrg.vercel.app");
+  });
+
+  it("Build móvil con NEXT_PUBLIC_API_URL: usa esa dirección y no la de Vercel", async () => {
+    const store = await load({
+      NEXT_PUBLIC_OPINA_TARGET: "mobile",
+      NEXT_PUBLIC_API_URL: "https://opina.example.com",
+    });
+
+    expect(store.defaultServerUrl()).toBe("https://opina.example.com");
+  });
+
+  it("DEFAULT_SERVER_URL es una línea que el script de build puede leer y es HTTPS", async () => {
+    const { readFileSync } = await import("node:fs");
+    const source = readFileSync("src/lib/platform/default-server.ts", "utf8");
+    const match = source.match(/^export const DEFAULT_SERVER_URL = "([^"]+)";$/m);
+
+    expect(match?.[1]).toMatch(/^https:\/\/[^/]+$/);
+  });
+
   it("apiFetch usa el servidor en uso", async () => {
     prefs.set("opina.server-url", "http://192.168.5.101:3000");
     vi.resetModules();

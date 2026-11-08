@@ -28,6 +28,9 @@ export type UserProfile = {
   avatarUrl: string | null;
   bio: string | null;
   isFriend: boolean;
+  // Solicitud de amistad pendiente entre quien mira y esta persona: `SENT` la
+  // envió quien mira, `RECEIVED` la envió la persona. Nula si son amigos o no hay.
+  friendRequest: "SENT" | "RECEIVED" | null;
   isSelf: boolean;
 };
 
@@ -54,11 +57,14 @@ type PersonRow = {
 async function queryPeoplePage({
   viewerId,
   onlyFriends,
+  onlyRequests = false,
   nameFilter,
   cursor,
 }: {
   viewerId: string;
   onlyFriends: boolean;
+  // Solo quien ha enviado una solicitud de amistad a `viewerId` (`isFriend` falso).
+  onlyRequests?: boolean;
   nameFilter: Prisma.Sql;
   cursor?: string;
 }): Promise<PeoplePage> {
@@ -69,14 +75,19 @@ async function queryPeoplePage({
       })()
     : Prisma.empty;
   const friendJoin = onlyFriends ? Prisma.sql`JOIN` : Prisma.sql`LEFT JOIN`;
+  const isFriendColumn = onlyRequests ? Prisma.sql`false` : Prisma.sql`(f.user_id IS NOT NULL)`;
+  const relationJoin = onlyRequests
+    ? Prisma.sql`JOIN friend_requests fr
+      ON fr.requester_id = u.id AND fr.addressee_id = ${viewerId}::uuid`
+    : Prisma.sql`${friendJoin} friendships f
+      ON f.user_id = ${viewerId}::uuid AND f.friend_id = u.id`;
 
   const rows = await prisma.$queryRaw<PersonRow[]>`
     SELECT u.id, u.username, u.avatar_url,
-           (f.user_id IS NOT NULL) AS is_friend,
+           ${isFriendColumn} AS is_friend,
            lower(u.username) AS sort_name
     FROM users u
-    ${friendJoin} friendships f
-      ON f.user_id = ${viewerId}::uuid AND f.friend_id = u.id
+    ${relationJoin}
     WHERE u.id <> ${viewerId}::uuid
       ${nameFilter}
       ${seek}
@@ -134,6 +145,26 @@ export const UserService = {
     return queryPeoplePage({
       viewerId: userId,
       onlyFriends: true,
+      nameFilter: Prisma.empty,
+      cursor,
+    });
+  },
+
+  /**
+   * Solicitudes de amistad recibidas por `userId` (TKT-079): misma tarjeta,
+   * orden alfabético y cursor que `search`, con `isFriend` siempre `false`.
+   */
+  async listFriendRequests({
+    userId,
+    cursor,
+  }: {
+    userId: string;
+    cursor?: string;
+  }): Promise<PeoplePage> {
+    return queryPeoplePage({
+      viewerId: userId,
+      onlyFriends: false,
+      onlyRequests: true,
       nameFilter: Prisma.empty,
       cursor,
     });
@@ -241,10 +272,27 @@ export const UserService = {
           select: { userId: true },
         });
 
+    let friendRequest: UserProfile["friendRequest"] = null;
+    if (!isSelf && friendship === null) {
+      const pending = await prisma.friendRequest.findFirst({
+        where: {
+          OR: [
+            { requesterId: viewerId, addresseeId: user.id },
+            { requesterId: user.id, addresseeId: viewerId },
+          ],
+        },
+        select: { requesterId: true },
+      });
+      if (pending) {
+        friendRequest = pending.requesterId === viewerId ? "SENT" : "RECEIVED";
+      }
+    }
+
     return {
       ...user,
       avatarUrl: toMediaUrl(user.avatarUrl),
       isFriend: friendship !== null,
+      friendRequest,
       isSelf,
     };
   },

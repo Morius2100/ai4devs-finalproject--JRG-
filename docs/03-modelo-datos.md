@@ -90,7 +90,23 @@ erDiagram
 
 - Relación **simétrica** almacenada como **dos filas** (`A→B` y `B→A`) para que "amigos de X" sea una consulta directa por `user_id`.
 - PK compuesta `(user_id, friend_id)`; `CHECK (user_id <> friend_id)`.
-- Se crea y se borra desde la aplicación (F-07, `FriendshipService.add` / `remove`): siempre las dos filas a la vez, en una transacción e idempotente. También se puebla por `prisma/seed.ts`.
+- Solo contiene amistades **aceptadas**. Se crea al aceptar una solicitud (`FriendshipService.accept`) y se borra con `remove`: siempre las dos filas a la vez, en una transacción e idempotente. También se puebla por `prisma/seed.ts`.
+
+### RateLimit (tabla `rate_limits`)
+
+Contador del límite de intentos (S-03, `src/server/rate-limit.ts`). Ventana fija por clave: `key` varchar(200) PK (por ejemplo `login:{ip}:{hash del email}`; nunca el email en claro), `window_start` timestamptz y `count` entero. Se actualiza con un `INSERT … ON CONFLICT` atómico; las filas de más de un día se borran de forma ocasional. No tiene relaciones.
+
+### FriendRequest (tabla `friend_requests`)
+
+Solicitud de amistad pendiente (Q-04, cambio `amistades-y-confidencialidad`). No concede ningún acceso: la política de visibilidad, las historias y las notificaciones solo leen `friendships`.
+
+| Campo         | Tipo        | Reglas                                                               |
+| ------------- | ----------- | -------------------------------------------------------------------- |
+| `requesterId` | uuid        | FK → `users`; quien envía. `ON DELETE CASCADE`.                      |
+| `addresseeId` | uuid        | FK → `users`; quien recibe. `ON DELETE CASCADE`. Índice.             |
+| `createdAt`   | timestamptz | `now()`                                                              |
+
+PK `(requester_id, addressee_id)`; `CHECK (requester_id <> addressee_id)`. Al aceptar se borra la solicitud y se insertan las dos filas de `friendships` en una transacción.
 
 ### Topic
 
@@ -183,6 +199,18 @@ model Friendship {
   @@id([userId, friendId])
   @@index([friendId])
   @@map("friendships")
+}
+
+model FriendRequest {
+  requesterId String   @map("requester_id") @db.Uuid
+  addresseeId String   @map("addressee_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  requester   User     @relation("SentFriendRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee   User     @relation("ReceivedFriendRequests", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@id([requesterId, addresseeId])
+  @@index([addresseeId])
+  @@map("friend_requests")
 }
 
 model Topic {

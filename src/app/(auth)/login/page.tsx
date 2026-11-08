@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { login } from "@/lib/auth/client";
+import { login, TooManyAttemptsError } from "@/lib/auth/client";
 import { currentServerUrl, isServerConfigurable } from "@/lib/platform/server-store";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -30,8 +30,12 @@ export default function LoginPage() {
 
       router.push("/");
       router.refresh();
-    } catch {
-      setError("No se pudo iniciar sesión. Inténtalo de nuevo.");
+    } catch (caught) {
+      setError(
+        caught instanceof TooManyAttemptsError
+          ? caught.message
+          : "No se pudo iniciar sesión. Inténtalo de nuevo.",
+      );
     } finally {
       setSubmitting(false);
     }

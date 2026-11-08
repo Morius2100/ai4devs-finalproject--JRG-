@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ThumbIcon } from "@/components/topics/ThumbIcon";
-import { resolveMediaUrl } from "@/lib/platform/media";
+import { isSignedMediaUrl, resolveMediaUrl } from "@/lib/platform/media";
 import { formatRelativeDate } from "@/lib/format/relative-date";
 import type { TopicSummary } from "@/server/services/topic-service";
 
@@ -42,6 +42,7 @@ export function TopicListItem({ topic }: { topic: TopicSummary }) {
             alt=""
             width={64}
             height={64}
+            unoptimized={isSignedMediaUrl(topic.imageUrl)}
             sizes="64px"
             className="h-16 w-16 shrink-0 rounded-xl object-cover"
           />

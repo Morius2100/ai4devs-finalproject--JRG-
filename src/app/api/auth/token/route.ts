@@ -3,6 +3,7 @@ import { loginSchema } from "@/lib/validation/auth";
 import { createAppToken } from "@/server/auth/bearer";
 import { UnauthorizedError } from "@/server/errors";
 import { toHttpResponse } from "@/server/http";
+import { consumeLoginRateLimit } from "@/server/rate-limit";
 import { AuthService } from "@/server/services/auth-service";
 
 /**
@@ -14,6 +15,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => null);
     const parsed = loginSchema.safeParse(body);
+    const email =
+      typeof (body as { email?: unknown } | null)?.email === "string"
+        ? (body as { email: string }).email
+        : "";
+    await consumeLoginRateLimit(request.headers, email);
     const user = parsed.success
       ? await AuthService.verifyCredentials(parsed.data.email, parsed.data.password)
       : null;

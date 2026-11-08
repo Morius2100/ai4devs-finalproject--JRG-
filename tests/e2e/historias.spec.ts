@@ -20,15 +20,28 @@ async function registerInNewContext(browser: Browser, baseURL: string | undefine
   return { username, page, close: () => context.close() };
 }
 
-async function befriend(page: Page, otherUsername: string) {
-  await page.goto(`/personas?q=${otherUsername}`);
-  await page.getByRole("link", { name: otherUsername }).click();
+type Actor = { username: string; page: Page };
+
+// La amistad exige consentimiento (Q-04): `requester` envía la solicitud y
+// `addressee` la acepta desde la lista de solicitudes de Personas.
+async function befriend(requester: Actor, addressee: Actor) {
+  const { page } = requester;
+  await page.goto(`/personas?q=${addressee.username}`);
+  await page.getByRole("link", { name: addressee.username }).click();
   await expect(page).toHaveURL(/\/persona\?id=/);
   await page.getByRole("button", { name: "Añadir a amigos" }).click();
-  await expect(page.getByRole("button", { name: "Amigos" })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: "Solicitud enviada" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
+
+  await addressee.page.goto("/personas");
+  await addressee.page
+    .getByRole("button", { name: `Aceptar la solicitud de ${requester.username}` })
+    .click();
+  await expect(
+    addressee.page.getByRole("button", { name: `Aceptar la solicitud de ${requester.username}` }),
+  ).toHaveCount(0);
 }
 
 async function createTopic(page: Page, title: string) {
@@ -64,7 +77,7 @@ test("amigo crea un tema: aparece su burbuja, se abre y desaparece al volver; un
     await expect(storiesNav(ana.page)).toHaveCount(0);
 
     // bruno y ana son amigos; bruno y dani (no amigo de ana) crean un tema cada uno.
-    await befriend(bruno.page, ana.username);
+    await befriend(bruno, ana);
     const brunoTitle = `¿Tema de historia? ${Date.now().toString(36)}`;
     await createTopic(bruno.page, brunoTitle);
     await createTopic(dani.page, `¿Tema de un desconocido? ${Date.now().toString(36)}`);
@@ -106,7 +119,7 @@ test("un tema abierto desde la lista, sin pasar por la burbuja, deja de contar",
   const bruno = await registerInNewContext(browser, baseURL, "histbru");
 
   try {
-    await befriend(bruno.page, ana.username);
+    await befriend(bruno, ana);
     const title = `¿Abierto desde la lista? ${Date.now().toString(36)}`;
     await createTopic(bruno.page, title);
 

@@ -3,6 +3,7 @@ import { registerSchema } from "@/lib/validation/auth";
 import { AuthService } from "@/server/services/auth-service";
 import { ValidationError } from "@/server/errors";
 import { toHttpResponse } from "@/server/http";
+import { consumeRegisterRateLimit } from "@/server/rate-limit";
 
 /**
  * POST /api/register — ruta pública (TKT-006).
@@ -10,6 +11,7 @@ import { toHttpResponse } from "@/server/http";
  */
 export async function POST(request: Request) {
   try {
+    await consumeRegisterRateLimit(request.headers);
     const json = await request.json().catch(() => null);
     const parsed = registerSchema.safeParse(json);
     if (!parsed.success) {

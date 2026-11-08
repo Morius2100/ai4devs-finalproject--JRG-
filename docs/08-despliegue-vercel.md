@@ -64,7 +64,7 @@ En el panel de Cloudflare → **R2 Object Storage**:
 | `S3_ACCESS_KEY_ID`     | Access Key ID del token de R2                                                                      |
 | `S3_SECRET_ACCESS_KEY` | Secret Access Key del token de R2                                                                  |
 | `S3_PUBLIC_URL`        | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com/opina-images` (obligatoria, no se usa para servir) |
-| `AUTH_URL`             | Opcional: la URL pública si usas un dominio propio                                                 |
+| `AUTH_URL`             | Recomendada: la URL pública (`https://ai4devs-finalproject-jrg.vercel.app` o tu dominio propio)   |
 
 3. **Deploy**. El primer despliegue aplica las migraciones en Neon.
 4. En **Settings → Functions → Function Region** elige **Frankfurt (fra1)**, cerca de Neon, y vuelve a desplegar.
@@ -75,10 +75,20 @@ En el panel de Cloudflare → **R2 Object Storage**:
 Desde tu PC, contra la cadena **directa** de Neon:
 
 ```bash
-DATABASE_URL="<cadena-directa-de-neon>" npm run prisma:seed
+DATABASE_URL="<cadena-directa-de-neon>" SEED_PASSWORD="<contraseña-larga-y-propia>" npm run prisma:seed
 ```
 
-Crea los usuarios de ejemplo (`ana@opina.test` / `password123`…). En una base de datos pública, cambia esas contraseñas o no ejecutes el seed.
+Crea los usuarios de ejemplo (`ana@opina.test`, `bruno@opina.test`…). **Fuera de local el seed exige `SEED_PASSWORD`** y no usa `password123`; aun así, no lo ejecutes en una base de datos pública salvo que lo necesites.
+
+En el build de Vercel, `RUN_SEED=1` en el entorno **Production** hace fallar el build, salvo que añadas `ALLOW_PRODUCTION_SEED=1` (y `SEED_PASSWORD`). Así no se publican por descuido cuentas de prueba (S-02 de `docs/09-revision-seguridad.md`).
+
+**Comprobar que producción no tiene cuentas de prueba.** En la consola SQL de Neon:
+
+```sql
+SELECT username, email FROM users WHERE email LIKE '%@opina.test';
+```
+
+Si devuelve filas, elimínalas (`DELETE FROM users WHERE email LIKE '%@opina.test';`, que borra en cascada sus temas, votos y amistades) o cambia su contraseña, y quita `RUN_SEED` de las variables de Vercel.
 
 ## 8.7 Paso 6 — APK que usa el servidor publicado
 

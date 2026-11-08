@@ -44,6 +44,7 @@ const profile: UserProfile = {
   avatarUrl: null,
   bio: "Me encanta debatir",
   isFriend: false,
+  friendRequest: null,
   isSelf: false,
 };
 
@@ -89,24 +90,52 @@ describe("FriendToggle", () => {
     );
   });
 
-  it("Añadir: cambia al instante, bloquea el botón mientras se envía y llama con PUT", async () => {
-    let resolve!: (value: { isFriend: boolean }) => void;
+  it("Solicitar: cambia al instante a «Solicitud enviada», bloquea el botón y llama con PUT", async () => {
+    let resolve!: (value: { status: "PENDING"; isFriend: boolean }) => void;
     vi.mocked(setFriendship).mockReturnValue(new Promise((r) => (resolve = r)));
     renderWithClient(<FriendToggle userId={USER_ID} initialIsFriend={false} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Añadir a amigos" }));
 
-    const button = await screen.findByRole("button", { name: "Amigos" });
+    const button = await screen.findByRole("button", { name: "Solicitud enviada" });
     expect(button).toBeDisabled();
     expect(setFriendship).toHaveBeenCalledWith({ userId: USER_ID, friend: true });
 
-    resolve({ isFriend: true });
+    resolve({ status: "PENDING", isFriend: false });
     await waitFor(() => expect(button).toBeEnabled());
     expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("button", { name: "Amigos" })).toBeNull();
+  });
+
+  it("Solicitud ya enviada: pulsar «Solicitud enviada» la cancela", async () => {
+    vi.mocked(setFriendship).mockResolvedValue({ status: "NONE", isFriend: false });
+    renderWithClient(
+      <FriendToggle userId={USER_ID} initialIsFriend={false} initialFriendRequest="SENT" />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Solicitud enviada" }));
+
+    expect(await screen.findByRole("button", { name: "Añadir a amigos" })).toBeInTheDocument();
+    expect(setFriendship).toHaveBeenCalledWith({ userId: USER_ID, friend: false });
+  });
+
+  it("Solicitud recibida: «Aceptar solicitud» crea la amistad", async () => {
+    vi.mocked(setFriendship).mockResolvedValue({ status: "FRIENDS", isFriend: true });
+    renderWithClient(
+      <FriendToggle userId={USER_ID} initialIsFriend={false} initialFriendRequest="RECEIVED" />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Aceptar solicitud" }));
+
+    expect(await screen.findByRole("button", { name: "Amigos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(setFriendship).toHaveBeenCalledWith({ userId: USER_ID, friend: true });
   });
 
   it("Quitar: pulsar «Amigos» pide quitar la amistad", async () => {
-    vi.mocked(setFriendship).mockResolvedValue({ isFriend: false });
+    vi.mocked(setFriendship).mockResolvedValue({ status: "NONE", isFriend: false });
     renderWithClient(<FriendToggle userId={USER_ID} initialIsFriend />);
 
     fireEvent.click(screen.getByRole("button", { name: "Amigos" }));

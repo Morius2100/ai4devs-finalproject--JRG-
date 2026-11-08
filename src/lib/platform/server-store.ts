@@ -1,4 +1,5 @@
 import { Preferences } from "@capacitor/preferences";
+import { DEFAULT_SERVER_URL } from "@/lib/platform/default-server";
 import { isNativeApp } from "@/lib/platform/native";
 
 const SERVER_KEY = "opina.server-url";
@@ -15,9 +16,14 @@ export function isServerConfigurable(): boolean {
   return isNativeApp() && process.env.NEXT_PUBLIC_OPINA_SERVER_CONFIGURABLE === "true";
 }
 
-/** Servidor fijado al compilar: vacío en la web (mismo origen). */
+/**
+ * Servidor fijado al compilar. Sin `NEXT_PUBLIC_API_URL`, el build móvil usa el de
+ * Vercel; la web, vacío (mismo origen).
+ */
 export function defaultServerUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? "";
+  const fixed = process.env.NEXT_PUBLIC_API_URL;
+  if (fixed !== undefined) return fixed;
+  return process.env.NEXT_PUBLIC_OPINA_TARGET === "mobile" ? DEFAULT_SERVER_URL : "";
 }
 
 /** Lee el servidor guardado. Hay que esperarlo antes de pintar o pedir datos. */

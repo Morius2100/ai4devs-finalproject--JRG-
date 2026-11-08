@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { DomainError, ValidationError } from "@/server/errors";
+import { DomainError, RateLimitedError, ValidationError } from "@/server/errors";
 
 export type ErrorBody = {
   error: {
@@ -20,7 +20,11 @@ export function toHttpResponse(error: unknown): NextResponse<ErrorBody> {
     if (error instanceof ValidationError && error.fieldErrors) {
       body.error.fieldErrors = error.fieldErrors;
     }
-    return NextResponse.json(body, { status: error.status });
+    const headers =
+      error instanceof RateLimitedError
+        ? { "Retry-After": String(error.retryAfterSeconds) }
+        : undefined;
+    return NextResponse.json(body, { status: error.status, headers });
   }
 
   console.error(error);

@@ -83,7 +83,17 @@ Los tickets se derivan de las historias de usuario ([04-historias-usuario.md](04
 | TKT-072 | DOC   | Documentación del servidor desde «Sin conexión»  | HU-22               | —          | 1      | servidor-sin-conexion |
 | TKT-073 | FE    | Cambiar de servidor desde «Sin conexión»         | HU-22               | 068        | 3      | servidor-sin-conexion |
 | TKT-074 | QA    | Pruebas del servidor desde «Sin conexión»        | HU-22               | 072, 073   | 2      | servidor-sin-conexion |
-|         |       |                                                  |                     |            | **155** |           |
+| TKT-077 | DB    | Tabla de solicitudes de amistad                  | HU-15               | 003, 036   | 1      | amistades-y-confidencialidad |
+| TKT-078 | BE    | Solicitar, aceptar, rechazar y cancelar amistad  | HU-15               | 077        | 3      | amistades-y-confidencialidad |
+| TKT-079 | BE    | Endpoints de solicitudes de amistad              | HU-15               | 078        | 2      | amistades-y-confidencialidad |
+| TKT-080 | FE    | Botón «Solicitud enviada» y lista de solicitudes | HU-15               | 079, 038, 039 | 3   | amistades-y-confidencialidad |
+| TKT-081 | QA    | Pruebas de amistad con consentimiento            | HU-15, HU-11, HU-12, HU-19 | 077–080 | 2 | amistades-y-confidencialidad |
+| TKT-082 | BE    | Limitación de intentos                           | HU-00, HU-15        | 006, 042   | 3      | amistades-y-confidencialidad |
+| TKT-083 | BE    | Login sin pistas y contraseña acotada            | HU-00               | 006        | 1      | amistades-y-confidencialidad |
+| TKT-084 | BE    | Imágenes de temas privados con URL firmada       | HU-10, HU-11        | 024, 028   | 3      | amistades-y-confidencialidad |
+| TKT-085 | BUILD | Protección del seed y cabeceras de seguridad     | HU-00               | 046, 075   | 2      | amistades-y-confidencialidad |
+| TKT-086 | QA    | Pruebas de confidencialidad                      | HU-00, HU-10, HU-11 | 082–085    | 2      | amistades-y-confidencialidad |
+|         |       |                                                  |                     |            | **177** |           |
 
 ## 5.2 Detalle de tickets
 
@@ -496,3 +506,57 @@ Los tickets se derivan de las historias de usuario ([04-historias-usuario.md](04
 
 - **Descripción:** tests de `defaultServerUrl()` (móvil con y sin variable, web) y de la línea que lee el script; README y `docs/08-despliegue-vercel.md`.
 - **Criterios:** escenarios de `specs/app-movil` del cambio cubiertos.
+
+### Amistades y confidencialidad (`amistades-y-confidencialidad`)
+
+Origen: tarea T6 de la Revisión 1 y [revisión de seguridad](09-revision-seguridad.md) (hallazgos S-01 a S-09).
+
+#### TKT-077 · Tabla de solicitudes de amistad
+
+- **Descripción:** migración con `friend_requests (requester_id, addressee_id, created_at)`, `UNIQUE (requester_id, addressee_id)`, `CHECK (requester_id <> addressee_id)` e índice por `addressee_id`. `friendships` no cambia.
+- **Criterios:** las filas existentes de `friendships` siguen siendo amistades aceptadas.
+
+#### TKT-078 · Solicitar, aceptar, rechazar y cancelar amistad
+
+- **Descripción:** `FriendshipService.request`, `accept`, `reject`, `cancel` y `listIncoming`. `accept` crea las dos filas de `friendships` y borra la solicitud en una transacción; si hay una solicitud en sentido contrario, `request` la acepta. Idempotentes. `VisibilityPolicy`, `StoryService` y `NotificationService` no cambian.
+- **Criterios:** CA-15.1, CA-15.3, CA-15.7, CA-15.8.
+
+#### TKT-079 · Endpoints de solicitudes de amistad
+
+- **Descripción:** `PUT /api/users/[id]/friendship` envía la solicitud (`200 { status: "PENDING" | "FRIENDS" }`); `DELETE` cancela o deshace; `GET /api/me/friend-requests`, `POST /api/me/friend-requests/[id]/accept` y `DELETE /api/me/friend-requests/[id]`. `400` sobre uno mismo, `404` si no existe o no es el destinatario.
+- **Criterios:** CA-15.1, CA-15.6, CA-15.8.
+
+#### TKT-080 · Botón «Solicitud enviada» y lista de solicitudes
+
+- **Descripción:** estados «Añadir a amigos», «Solicitud enviada» y «Amigos» en `FriendToggle` (`aria-pressed`, rollback en error); sección «Solicitudes» en la pantalla Personas con aceptar y rechazar.
+- **Criterios:** CA-15.1, CA-15.5, CA-15.6, CA-15.7.
+
+#### TKT-081 · Pruebas de amistad con consentimiento
+
+- **Descripción:** integración (pendiente sin acceso a detalle, perfil, historias y notificaciones; aceptar, rechazar, cancelar, solicitud cruzada, aceptar una solicitud ajena → `404`) y e2e `dani` → `ana` → aceptar → `dani` ve el tema privado.
+- **Criterios:** escenarios de `specs/amistades` del cambio cubiertos.
+
+#### TKT-082 · Limitación de intentos
+
+- **Descripción:** módulo de límite con ventana deslizante en Postgres (o Upstash), aplicado a login web, `POST /api/auth/token`, `POST /api/register` y solicitudes de amistad; `429` con `Retry-After`.
+- **Criterios:** escenarios «Limitación de intentos» de `specs/confidencialidad-usuarios`.
+
+#### TKT-083 · Login sin pistas y contraseña acotada
+
+- **Descripción:** `verifyCredentials` compara con un hash ficticio si el email no existe; `registerSchema` limita la contraseña a 72 caracteres.
+- **Criterios:** escenarios «Inicio de sesión sin pistas» y «Longitud acotada».
+
+#### TKT-084 · Imágenes de temas privados con URL firmada
+
+- **Descripción:** URLs firmadas con HMAC y caducidad de minutos, generadas solo si `VisibilityPolicy` lo permite; `/api/media` responde `404` sin firma válida para temas privados. Temas públicos y avatares sin cambios.
+- **Criterios:** escenarios «Imágenes de temas privados protegidas».
+
+#### TKT-085 · Protección del seed y cabeceras de seguridad
+
+- **Descripción:** `vercel-build.mjs` aborta con `RUN_SEED=1` en producción sin `ALLOW_PRODUCTION_SEED=1`; contraseña del seed por variable fuera de local; cabeceras en `next.config.ts` (CSP primero en `Report-Only`).
+- **Criterios:** escenarios «Credenciales de prueba fuera de producción» y «Cabeceras de seguridad HTTP».
+
+#### TKT-086 · Pruebas de confidencialidad
+
+- **Descripción:** pruebas de los tres grupos anteriores y comprobación del flujo completo en la web desplegada y en la APK sin violaciones de CSP.
+- **Criterios:** escenarios de `specs/confidencialidad-usuarios` cubiertos.

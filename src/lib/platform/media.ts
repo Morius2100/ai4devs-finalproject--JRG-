@@ -9,3 +9,12 @@ import { currentServerUrl } from "@/lib/platform/server-store";
 export function resolveMediaUrl(url: string): string {
   return url.startsWith("/") ? `${currentServerUrl()}${url}` : url;
 }
+
+/**
+ * ¿Lleva la firma de corta duración de un tema privado (`?exp=&sig=`)? Estas
+ * imágenes se sirven sin pasar por el optimizador de Next: así su URL firmada no
+ * queda en su caché más allá de la caducidad.
+ */
+export function isSignedMediaUrl(url: string): boolean {
+  return url.startsWith("/api/media/") && url.includes("sig=");
+}

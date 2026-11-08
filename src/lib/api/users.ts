@@ -46,9 +46,12 @@ export async function fetchUserTopicsPage({
   return parseJson<TopicPage>(response);
 }
 
+export type FriendshipResult = { status: "NONE" | "PENDING" | "FRIENDS"; isFriend: boolean };
+
 /**
- * Cliente de `PUT` / `DELETE /api/users/:id/friendship` (TKT-039): añade
- * (`friend = true`) o quita (`false`) a la persona de amigos.
+ * Cliente de `PUT` / `DELETE /api/users/:id/friendship` (TKT-080): solicita
+ * la amistad (`friend = true`; si la otra persona ya la había solicitado, la
+ * acepta) o quita la amistad / cancela la solicitud (`false`).
  */
 export async function setFriendship({
   userId,
@@ -56,9 +59,35 @@ export async function setFriendship({
 }: {
   userId: string;
   friend: boolean;
-}): Promise<{ isFriend: boolean }> {
+}): Promise<FriendshipResult> {
   const response = await apiFetch(`/api/users/${userId}/friendship`, {
     method: friend ? "PUT" : "DELETE",
   });
-  return parseJson<{ isFriend: boolean }>(response);
+  return parseJson<FriendshipResult>(response);
+}
+
+/** Cliente de `GET /api/me/friend-requests`: solicitudes de amistad recibidas (TKT-080). */
+export async function fetchFriendRequests({ cursor }: { cursor?: string }): Promise<PeoplePage> {
+  const params = new URLSearchParams();
+  if (cursor) params.set("cursor", cursor);
+  const qs = params.toString();
+
+  const response = await apiFetch(`/api/me/friend-requests${qs ? `?${qs}` : ""}`);
+  return parseJson<PeoplePage>(response);
+}
+
+/** Cliente de `POST /api/me/friend-requests/:id/accept` (TKT-080). */
+export async function acceptFriendRequest(requesterId: string): Promise<FriendshipResult> {
+  const response = await apiFetch(`/api/me/friend-requests/${requesterId}/accept`, {
+    method: "POST",
+  });
+  return parseJson<FriendshipResult>(response);
+}
+
+/** Cliente de `DELETE /api/me/friend-requests/:id` (TKT-080): rechaza la solicitud. */
+export async function rejectFriendRequest(requesterId: string): Promise<FriendshipResult> {
+  const response = await apiFetch(`/api/me/friend-requests/${requesterId}`, {
+    method: "DELETE",
+  });
+  return parseJson<FriendshipResult>(response);
 }

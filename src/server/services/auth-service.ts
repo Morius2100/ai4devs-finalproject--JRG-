@@ -6,6 +6,9 @@ import type { RegisterInput } from "@/lib/validation/auth";
 
 const BCRYPT_COST = 12;
 
+// Hash bcrypt (coste 12) de una contraseña que nadie usa, para igualar tiempos en el login.
+const DUMMY_PASSWORD_HASH = "$2b$12$b5SJTqPmn/pcki3.yfvO5Oj/kSVxi7.srw3DbCRBhg3VUJ6WPMbE.";
+
 export type PublicUser = {
   id: string;
   username: string;
@@ -53,12 +56,10 @@ export const AuthService = {
   async verifyCredentials(email: string, password: string): Promise<PublicUser | null> {
     const normalizedEmail = email.trim().toLowerCase();
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-    if (!user) {
-      return null;
-    }
-
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
+    // Se compara siempre con un hash, real o ficticio: la respuesta tarda lo
+    // mismo si el email no existe y no delata qué cuentas hay (S-04).
+    const valid = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+    if (!user || !valid) {
       return null;
     }
 

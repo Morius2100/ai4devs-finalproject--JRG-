@@ -36,8 +36,34 @@ model User {
   notifications      Notification[] @relation("NotificationRecipient")
   actedNotifications Notification[] @relation("NotificationActor")
   topicViews         TopicView[]
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
 
   @@map("users")
+}
+
+// Contador de peticiones por clave y ventana (S-03, límite de intentos). La
+// clave no contiene datos personales: el email va como hash.
+model RateLimit {
+  key         String   @id @db.VarChar(200)
+  windowStart DateTime @default(now()) @map("window_start") @db.Timestamptz
+  count       Int      @default(1)
+
+  @@map("rate_limits")
+}
+
+// Solicitud de amistad pendiente (Q-04). No concede acceso: la política de
+// visibilidad, las historias y las notificaciones solo leen `friendships`.
+model FriendRequest {
+  requesterId String   @map("requester_id") @db.Uuid
+  addresseeId String   @map("addressee_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  requester   User     @relation("SentFriendRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee   User     @relation("ReceivedFriendRequests", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@id([requesterId, addresseeId])
+  @@index([addresseeId])
+  @@map("friend_requests")
 }
 
 model Friendship {
@@ -69,6 +95,7 @@ model Topic {
 
   @@index([visibility, totalVotes(sort: Desc), createdAt(sort: Desc), id])
   @@index([authorId])
+  @@index([imageUrl])
   @@map("topics")
 }
 

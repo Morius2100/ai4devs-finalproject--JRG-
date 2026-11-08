@@ -27,6 +27,9 @@ export default defineConfig({
     command: "npm run build && npm run start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    // Los e2e registran decenas de usuarios desde una misma IP: sin límite de intentos (S-03).
+    // `next start` en local corre en modo producción: hay que confiar en el host (S-08).
+    env: { RATE_LIMIT_DISABLED: "1", AUTH_TRUST_HOST: "true" },
     timeout: 120_000,
   },
 });

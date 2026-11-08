@@ -30,15 +30,28 @@ async function createTopic(page: Page, title: string, visibility: "Público" | "
   await expect(page).toHaveURL(/\/tema\?id=[0-9a-f-]{36}$/, { timeout: 10_000 });
 }
 
-async function befriend(page: Page, otherUsername: string) {
-  await page.goto(`/personas?q=${otherUsername}`);
-  await page.getByRole("link", { name: otherUsername }).click();
+type Actor = { username: string; page: Page };
+
+// La amistad exige consentimiento (Q-04): `requester` envía la solicitud y
+// `addressee` la acepta desde la lista de solicitudes de Personas.
+async function befriend(requester: Actor, addressee: Actor) {
+  const { page } = requester;
+  await page.goto(`/personas?q=${addressee.username}`);
+  await page.getByRole("link", { name: addressee.username }).click();
   await expect(page).toHaveURL(/\/persona\?id=/);
   await page.getByRole("button", { name: "Añadir a amigos" }).click();
-  await expect(page.getByRole("button", { name: "Amigos" })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: "Solicitud enviada" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
+
+  await addressee.page.goto("/personas");
+  await addressee.page
+    .getByRole("button", { name: `Aceptar la solicitud de ${requester.username}` })
+    .click();
+  await expect(
+    addressee.page.getByRole("button", { name: `Aceptar la solicitud de ${requester.username}` }),
+  ).toHaveCount(0);
 }
 
 const nav = (page: Page) => page.getByRole("navigation", { name: "Secciones" });
@@ -190,7 +203,7 @@ test("lista de amigos: mis amigos abren su perfil y quitar uno actualiza la list
   const bruno = await registerInNewContext(browser, baseURL, "perfbru");
 
   try {
-    await befriend(eva.page, bruno.username);
+    await befriend(eva, bruno);
 
     await eva.page.goto("/perfil");
     await expect(eva.page.getByRole("link", { name: "1 amigo" })).toBeVisible();

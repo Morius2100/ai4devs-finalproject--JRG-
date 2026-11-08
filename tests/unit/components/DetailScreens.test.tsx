@@ -84,6 +84,7 @@ describe("PersonScreen: /persona?id= (TKT-045)", () => {
       avatarUrl: null,
       bio: null,
       isFriend: false,
+      friendRequest: null,
       isSelf: false,
     });
     vi.mocked(fetchUserTopicsPage).mockResolvedValue({ items: [], nextCursor: null });

@@ -8,7 +8,13 @@ import { PrismaClient } from "@prisma/client";
  */
 const prisma = new PrismaClient();
 
-const SEED_PASSWORD = "password123";
+// Fuera de local (Vercel) la contraseña de los usuarios de prueba sale de SEED_PASSWORD:
+// nunca se publica una cuenta con una contraseña conocida (S-02).
+const IS_REMOTE = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+if (IS_REMOTE && !process.env.SEED_PASSWORD) {
+  throw new Error("Define SEED_PASSWORD para cargar el seed fuera de local.");
+}
+const SEED_PASSWORD = process.env.SEED_PASSWORD ?? "password123";
 const BCRYPT_COST = 12;
 
 // Perfil mínimo (F-07): foto de demostración y descripción. `dani` queda sin

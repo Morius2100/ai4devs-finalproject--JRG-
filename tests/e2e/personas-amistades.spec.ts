@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Browser, type Page } from "@playwright/test";
 
 // E2E de las specs `menu-inferior`, `personas` y `amistades` (TKT-040,
 // HU-13..HU-15). Cada prueba registra a su propio usuario (no toca las
@@ -58,7 +58,8 @@ test("un usuario busca a ana, la añade y ve y vota su tema privado; al quitarla
   await logout(page);
 
   // 1. Un usuario nuevo se registra: Temas es la pestaña activa por defecto.
-  await register(page, newVisitor());
+  const visitor = newVisitor();
+  await register(page, visitor);
   const nav = page.getByRole("navigation", { name: "Secciones" });
   await expect(nav.getByRole("link", { name: "Temas" })).toHaveAttribute("aria-current", "page");
 
@@ -86,8 +87,33 @@ test("un usuario busca a ana, la añade y ve y vota su tema privado; al quitarla
   await expect(topics.getByText(title)).toHaveCount(0);
   await expect(topics.getByText("Privado")).toHaveCount(0);
 
-  // 4. «Añadir a amigos»: aparece el tema privado con la etiqueta «Privado».
+  // 4. «Añadir a amigos» solo envía una solicitud (Q-04): mientras ana no la
+  // acepte, el tema privado sigue sin verse, ni en el perfil ni por URL.
   await page.getByRole("button", { name: "Añadir a amigos" }).click();
+  await expect(page.getByRole("button", { name: "Solicitud enviada" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Solicitud enviada" })).toBeVisible();
+  await expect(topics.getByText(title)).toHaveCount(0);
+  await page.goto(topicUrl);
+  await expect(page.getByRole("heading", { name: "Tema no encontrado" })).toBeVisible();
+
+  // ana ve la solicitud en Personas y la acepta.
+  await logout(page);
+  await login(page, "ana@opina.test", "password123");
+  await page.goto("/personas");
+  const accept = page.getByRole("button", {
+    name: `Aceptar la solicitud de ${visitor.username}`,
+  });
+  await accept.click();
+  await expect(accept).toHaveCount(0);
+  await logout(page);
+
+  // Con la amistad aceptada aparece el tema privado con la etiqueta «Privado».
+  await login(page, visitor.email, visitor.password);
+  await page.goto(profileUrl);
   await expect(page.getByRole("button", { name: "Amigos" })).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -130,6 +156,66 @@ test("un usuario busca a ana, la añade y ve y vota su tema privado; al quitarla
   // 8. Sin amistad, la URL del tema privado responde «Tema no encontrado».
   await page.goto(topicUrl);
   await expect(page.getByRole("heading", { name: "Tema no encontrado" })).toBeVisible();
+});
+
+async function registerInNewContext(browser: Browser, baseURL: string | undefined, label: string) {
+  const visitor = { ...newVisitor(), username: `${label}${newVisitor().username.slice(4)}` };
+  const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  await register(page, visitor);
+  return { username: visitor.username, page, close: () => context.close() };
+}
+
+async function openProfileOf(page: Page, username: string) {
+  await page.goto(`/personas?q=${username}`);
+  await page.getByRole("link", { name: username }).click();
+  await expect(page).toHaveURL(/\/persona\?id=[0-9a-f-]{36}$/);
+}
+
+test("solicitud de amistad: se cancela, se rechaza sin crear amistad y se puede volver a enviar", async ({
+  browser,
+  baseURL,
+}) => {
+  const eva = await registerInNewContext(browser, baseURL, "frqe");
+  const bruno = await registerInNewContext(browser, baseURL, "frqb");
+
+  try {
+    // eva solicita la amistad de bruno y la cancela: bruno no la ve.
+    await openProfileOf(eva.page, bruno.username);
+    await eva.page.getByRole("button", { name: "Añadir a amigos" }).click();
+    await expect(eva.page.getByRole("button", { name: "Solicitud enviada" })).toBeVisible();
+    await bruno.page.goto("/personas");
+    await expect(
+      bruno.page.getByRole("button", { name: `Rechazar la solicitud de ${eva.username}` }),
+    ).toBeVisible();
+
+    await eva.page.getByRole("button", { name: "Solicitud enviada" }).click();
+    await expect(eva.page.getByRole("button", { name: "Añadir a amigos" })).toBeVisible();
+    await bruno.page.reload();
+    await expect(bruno.page.getByRole("heading", { name: "Solicitudes de amistad" })).toHaveCount(
+      0,
+    );
+
+    // La envía otra vez y bruno la rechaza: no hay amistad y eva puede volver a solicitarla.
+    await eva.page.getByRole("button", { name: "Añadir a amigos" }).click();
+    await expect(eva.page.getByRole("button", { name: "Solicitud enviada" })).toBeVisible();
+    await bruno.page.reload();
+    const reject = bruno.page.getByRole("button", {
+      name: `Rechazar la solicitud de ${eva.username}`,
+    });
+    await reject.click();
+    await expect(reject).toHaveCount(0);
+
+    await eva.page.reload();
+    await expect(eva.page.getByRole("button", { name: "Añadir a amigos" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    await eva.page.goto("/perfil");
+    await expect(eva.page.getByRole("link", { name: "0 amigos" })).toBeVisible();
+  } finally {
+    await Promise.all([eva.close(), bruno.close()]);
+  }
 });
 
 test("perfil inexistente: «Persona no encontrada» con enlace a Personas", async ({ page }) => {

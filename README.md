@@ -116,7 +116,13 @@ npm run dev:android
 - La app sale sola de «Sin conexión» en cuanto la API vuelve a responder (p. ej. al reiniciar el servidor).
 - El build móvil compila en `.next` aunque exporte a `out-mobile`: lánzalo con el servidor **parado** y vuelve a arrancarlo después.
 
-**Producción:** con la API desplegada en HTTPS:
+**Producción:** apunta por defecto al servidor de Vercel (`https://ai4devs-finalproject-jrg.vercel.app`, definido en `src/lib/platform/default-server.ts`):
+
+```bash
+npm run build:mobile
+```
+
+Para usar otro servidor, indica su URL HTTPS al compilar:
 
 ```bash
 NEXT_PUBLIC_API_URL=https://tu-dominio npm run build:mobile
@@ -128,14 +134,14 @@ npm run android:release
 
 `android:release` genera un APK sin firmar en `android/app/build/outputs/apk/release/`; para instalarlo o publicarlo hay que firmarlo con tu keystore.
 
-| Comando                    | Qué hace                                                         |
-| -------------------------- | ---------------------------------------------------------------- |
-| `npm run dev:android`      | `next dev` en el 3000 + `adb reverse` en cada conexión del móvil |
-| `npm run build:mobile:dev` | Export de la interfaz contra `localhost:3000` + `cap sync`       |
-| `npm run build:mobile`     | Export contra `NEXT_PUBLIC_API_URL` (obligatoria) + `cap sync`   |
-| `npm run android:apk`      | APK de depuración                                                |
-| `npm run android:release`  | APK de release sin firmar                                        |
-| `npm run android:assets`   | Regenera icono y pantalla de arranque desde el logotipo          |
+| Comando                    | Qué hace                                                                   |
+| -------------------------- | -------------------------------------------------------------------------- |
+| `npm run dev:android`      | `next dev` en el 3000 + `adb reverse` en cada conexión del móvil           |
+| `npm run build:mobile:dev` | Export de la interfaz contra `localhost:3000` + `cap sync`                 |
+| `npm run build:mobile`     | Export contra el servidor de Vercel (o `NEXT_PUBLIC_API_URL`) + `cap sync` |
+| `npm run android:apk`      | APK de depuración                                                          |
+| `npm run android:release`  | APK de release sin firmar                                                  |
+| `npm run android:assets`   | Regenera icono y pantalla de arranque desde el logotipo                    |
 
 ### App Android en la red local (sin cable)
 

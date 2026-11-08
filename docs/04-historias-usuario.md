@@ -208,9 +208,12 @@ Formato: _Como_ <rol>, _quiero_ <acción>, _para_ <beneficio>. Cada historia inc
 **Como** usuario, **quiero** añadir o quitar a una persona de mis amigos desde su perfil, **para** decidir quién accede a mis temas privados.
 
 - **Prioridad:** Must · **Estimación:** 3 pts
-- **CA-15.1** El perfil muestra un check que indica si somos amigos; al pulsarlo sin serlo, pasamos a ser amigos mutuamente, sin solicitud.
+- **CA-15.1** El perfil muestra un check que indica si somos amigos; al pulsarlo sin serlo, se envía una solicitud y el botón pasa a «Solicitud enviada». La amistad, mutua, solo se crea cuando la otra persona la acepta.
 - **CA-15.2** Al pulsarlo siendo amigos, dejamos de serlo ambos.
-- **CA-15.3** El cambio se aplica de inmediato al acceso a temas privados y a las notificaciones de nuevos temas privados.
+- **CA-15.3** El cambio de amistad (aceptada o quitada) se aplica de inmediato al acceso a temas privados y a las notificaciones de nuevos temas privados. Una solicitud pendiente no da acceso.
+- **CA-15.6** La pantalla Personas muestra las solicitudes recibidas; puedo aceptarlas (se crea la amistad) o rechazarlas (se borran sin avisar a quien las envió).
+- **CA-15.7** Puedo cancelar una solicitud enviada pulsando «Solicitud enviada». Si la otra persona ya me había enviado una, mi solicitud la acepta.
+- **CA-15.8** Solo la persona destinataria puede aceptar o rechazar una solicitud; cualquier otra recibe «no encontrada».
 - **CA-15.4** No puedo añadirme a mí mismo: en mi propio perfil no aparece el check.
 - **CA-15.5** Si la operación falla, el check vuelve a su estado anterior y se muestra un error; repetirla no crea duplicados.
 

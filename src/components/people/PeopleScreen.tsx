@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { FriendRequests } from "@/components/people/FriendRequests";
 import { PeopleList } from "@/components/people/PeopleList";
 import { SearchBar } from "@/components/topics/SearchBar";
 
@@ -19,6 +20,7 @@ export function PeopleScreen() {
         placeholder="Buscar personas…"
         ariaLabel="Buscar personas"
       />
+      {q ? null : <FriendRequests />}
       <PeopleList
         q={q}
         emptyMessage={

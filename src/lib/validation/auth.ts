@@ -7,6 +7,7 @@ import { z } from "zod";
  */
 
 const USERNAME_REGEX = /^[a-z0-9_]+$/;
+const MAX_PASSWORD_BYTES = 72;
 
 export const registerSchema = z.object({
   username: z
@@ -24,7 +25,13 @@ export const registerSchema = z.object({
     .toLowerCase()
     .min(1, "El email es obligatorio")
     .email("El email no es válido"),
-  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+  password: z
+    .string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres")
+    // bcrypt solo procesa 72 bytes; más allá se ignora y solo cuesta CPU (S-09).
+    .refine((value) => new TextEncoder().encode(value).length <= MAX_PASSWORD_BYTES, {
+      message: "La contraseña no puede superar los 72 caracteres",
+    }),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

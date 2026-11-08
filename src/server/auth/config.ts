@@ -11,9 +11,14 @@ export const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60;
  * dependencias.
  */
 export const authConfig = {
-  // Despliegue autoalojado (no Vercel): confiar en el host de la petición.
-  // En producción detrás de un proxy, fijarlo con la variable AUTH_URL.
-  trustHost: true,
+  // Solo se confía en la cabecera `Host` donde la fija la plataforma (Vercel), en
+  // desarrollo y pruebas, o si se pide expresamente con AUTH_TRUST_HOST=true
+  // (p. ej. `next start` en local). En cualquier otro producción Auth.js rechaza
+  // hosts no reconocidos; en Vercel conviene fijar además AUTH_URL (S-08).
+  trustHost:
+    Boolean(process.env.VERCEL) ||
+    process.env.AUTH_TRUST_HOST === "true" ||
+    process.env.NODE_ENV !== "production",
   session: {
     strategy: "jwt",
     maxAge: THIRTY_DAYS_IN_SECONDS,

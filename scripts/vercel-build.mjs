@@ -10,6 +10,13 @@
 // transacción no admite los bloqueos de `migrate`. La integración de Neon con Vercel la
 // define como DATABASE_URL_UNPOOLED; si se configura a mano, DIRECT_URL.
 import { spawnSync } from "node:child_process";
+import { seedBlockedReason } from "./seed-guard.mjs";
+
+const seedBlocked = seedBlockedReason(process.env);
+if (seedBlocked) {
+  console.error(seedBlocked);
+  process.exit(1);
+}
 
 const shouldMigrate = process.env.VERCEL_ENV === "production" || process.env.RUN_MIGRATIONS === "1";
 const migrationUrl =
