@@ -72,7 +72,10 @@ test("Tema sin votar y diálogo de justificación (usuario nuevo, sin votos)", a
   await page.getByRole("button", { name: "Crear cuenta" }).click();
   await expect(page).toHaveURL("/");
 
-  await page.getByRole("link", { name: /votos?/ }).first().click();
+  await page
+    .getByRole("link", { name: /votos?/ })
+    .first()
+    .click();
   await expect(page.getByRole("button", { name: "Votar a favor" })).toBeVisible();
 
   await expectNoViolations(page, "Tema sin votar");
@@ -107,13 +110,16 @@ test.describe("Pantallas con sesión", () => {
     await expect(links.first()).toBeVisible();
     await links.first().click();
     const vote = page.getByRole("button", { name: "Votar a favor" });
-    if (await vote.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    const results = page.getByText("Resultados", { exact: true });
+    // `isVisible()` no espera: hay que esperar a que la pantalla cargue y muestre una de las dos cosas.
+    await expect(vote.or(results).first()).toBeAttached();
+    if (await vote.count()) {
       await vote.click();
       const dialog = page.getByRole("dialog");
       await dialog.getByRole("textbox", { name: "Justificación" }).fill("Accesible");
       await dialog.getByRole("button", { name: "Votar" }).click();
     }
-    await expect(page.getByText("Resultados", { exact: true })).toBeAttached();
+    await expect(results).toBeAttached();
 
     await expectNoViolations(page, "Tema votado");
   });
