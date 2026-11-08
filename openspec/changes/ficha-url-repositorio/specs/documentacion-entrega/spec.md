@@ -14,3 +14,14 @@ El apartado 0.5 del `readme.md` del repositorio de entrega MUST contener un enla
 #### Scenario: Los enlaces responden
 - **WHEN** se abre cada URL del apartado 0.5 sin sesión iniciada en GitHub
 - **THEN** la respuesta es HTTP 200
+
+### Requirement: La ficha del proyecto incluye la URL de la aplicación desplegada
+El apartado 0.4 del `readme.md` del repositorio de entrega MUST contener la URL de la aplicación desplegada en Vercel, `https://ai4devs-finalproject-jrg.vercel.app/`, y MUST NOT contener un marcador «PENDIENTE». Origen: petición del usuario al aplicar el change, porque la app ya está desplegada. No deriva de ninguna HU.
+
+#### Scenario: El revisor busca la demo
+- **WHEN** el revisor lee el apartado 0.4 del `readme.md`
+- **THEN** ve un enlace a `https://ai4devs-finalproject-jrg.vercel.app/` y una indicación de que puede registrarse con un usuario nuevo
+
+#### Scenario: La aplicación responde
+- **WHEN** se abre la URL del apartado 0.4
+- **THEN** la respuesta final es HTTP 200 tras la redirección a la pantalla de acceso

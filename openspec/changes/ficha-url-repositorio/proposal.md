@@ -8,7 +8,7 @@ La Revisión 1 de LIDR (16/10/2026, tarea **T1**) marca la ficha del proyecto co
   - la URL de este repositorio de entrega: `https://github.com/Morius2100/AI4Devs-finalproject` (rama `feature/entrega-1-JRG`);
   - la URL del repositorio con el código completo del proyecto: `https://github.com/Morius2100/ai4devs-finalproject--JRG-`.
 - Indicar en una frase qué contiene cada repositorio.
-- No se toca el apartado 0.4 (URL de la app desplegada): la revisión lo deja para la entrega final.
+- Sustituir el marcador «PENDIENTE» del apartado **0.4** por la URL de la aplicación desplegada en Vercel: `https://ai4devs-finalproject-jrg.vercel.app/`. La revisión lo deja para la entrega final, pero la app ya está desplegada, así que se adelanta.
 
 ## Capabilities
 
