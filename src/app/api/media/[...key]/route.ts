@@ -1,5 +1,5 @@
-import { prisma } from "@/server/db/client";
 import { MEDIA_KEY_PATTERN, verifyMediaSignature } from "@/server/media";
+import { TopicService } from "@/server/services/topic-service";
 import { imageStorage } from "@/server/storage";
 
 const notFound = () =>
@@ -25,14 +25,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ key:
 
   let isPrivate = false;
   if (key.startsWith("topics/")) {
-    const topic = await prisma.topic.findFirst({
-      where: { imageUrl: key },
-      select: { visibility: true },
-    });
-    if (!topic) {
+    const visibility = await TopicService.findImageVisibility(key);
+    if (visibility === null) {
       return notFound();
     }
-    isPrivate = topic.visibility === "PRIVATE";
+    isPrivate = visibility === "PRIVATE";
   }
 
   if (isPrivate) {

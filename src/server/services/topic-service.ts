@@ -189,6 +189,19 @@ export const TopicService = {
   },
 
   /**
+   * Visibilidad del tema al que pertenece la imagen `key` (`topics/<uuid>.<ext>`),
+   * o `null` si ningún tema la usa (TKT-084). La usa `/api/media` para decidir si
+   * exige la firma de corta duración.
+   */
+  async findImageVisibility(key: string): Promise<Visibility | null> {
+    const topic = await prisma.topic.findFirst({
+      where: { imageUrl: key },
+      select: { visibility: true },
+    });
+    return topic?.visibility ?? null;
+  },
+
+  /**
    * Detalle de un tema (TKT-016): `NotFoundError` si no existe o el
    * visitante no tiene acceso según `VisibilityPolicy` (mismo error en
    * ambos casos, para no revelar la existencia de un tema privado ajeno).
