@@ -128,10 +128,10 @@ Si algo falla, Vercel **no publica** esa versión y la anterior sigue en producc
 
 | Punto | Estado | Detalle |
 | --- | --- | --- |
-| **CI en rojo desde el primer commit** | Corregido en local, **sin comprobar en GitHub** | Fallaba en `npm ci` (lock de npm 11 frente al npm 10 de Node 22). Ya se regeneró el lock. Los pasos posteriores nunca se habían ejecutado en GitHub y pueden revelar fallos nuevos. |
+| **CI en rojo desde el primer commit** | **Corregido y en verde en GitHub (9 de noviembre de 2026)** | Fallaba en `npm ci` (lock de npm 11 frente al npm 10 de Node 22). Al regenerar el lock, los pasos siguientes se ejecutaron por primera vez y solo falló un e2e de accesibilidad (esperaba sin asegurarse de que el tema hubiera cargado), ya corregido. |
 | **`main` protegida** | **Preparada, falta importar el _ruleset_** | [`.github/rulesets/main.json`](../.github/rulesets/main.json) lo define. Hay que importarlo a mano (§12.6) y solo cuando el CI esté en verde. |
-| **Contenedor de la aplicación** | **Hecho y probado en local** | `Dockerfile` y servicio `app`: la imagen se construye (667 MB), arranca sana, corre como usuario `node`, aplica las migraciones y permite registrarse, iniciar sesión y crear un tema con imagen. El job `docker` aún no ha corrido en GitHub. |
-| **APK en el CI** | **Añadido, sin ejecutar** | El job `apk` no se ha probado ni en local ni en GitHub: puede necesitar ajustes (por ejemplo, la plataforma de Android). |
+| **Contenedor de la aplicación** | **Hecho y verificado en local y en GitHub** | `Dockerfile` y servicio `app`: la imagen se construye (667 MB), arranca sana, corre como usuario `node`, aplica las migraciones y permite registrarse, iniciar sesión y crear un tema con imagen. El job `docker` pasa en GitHub, con las migraciones sobre una base vacía. |
+| **APK en el CI** | **Hecho en GitHub; falta probarla en un móvil** | El job `apk` pasa a la primera y sube `opina-debug-apk`. Falta descargarla, instalarla y comprobar que se conecta al servidor de producción. |
 | **Vercel no espera al CI de forma explícita** | **Hueco residual aceptado** | Con `main` protegida, lo que se despliega ya pasó el CI en su PR. Pero (a) si el propietario fusiona saltándose el check, o (b) si el CI falla sobre el commit de fusión, Vercel despliega igualmente. |
 | **Mejora futura para cerrarlo** | Opcional | Un job `deploy` con `needs: ci` que publique con la CLI de Vercel y desactivar el despliegue automático de `main` (`vercel.json`). Exige tres secretos en GitHub (`VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`) y mover el build al ejecutor de GitHub. |
 | **Revisión automática de dependencias** | Sin hacer | `npm audit` avisa de vulnerabilidades que nadie revisa. Opcional: Dependabot. |
