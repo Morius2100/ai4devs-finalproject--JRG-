@@ -19,4 +19,4 @@ La Revisión 1 de LIDR (tarea **T9**) pide priorizar la implementación y las pr
 ## Impact
 
 - **Afectado:** `tests/` y `docs/`; la dependencia de desarrollo `@axe-core/playwright`; y dos componentes, `MainMenu` (logotipo) y `StoriesBar` (historias), cuyo nombre accesible se corrigió tras las pruebas de accesibilidad (WCAG 2.5.3).
-- **Pendiente (siguientes pasos de T9):** dejar trazado el uso de IA en la implementación (las pruebas de accesibilidad con axe ya están hechas).
+- **Trazado de IA:** `docs/11-uso-de-ia.md` y `prompts.md` §8 (hecho).

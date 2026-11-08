@@ -19,4 +19,4 @@
 - [x] 3.1 `docs/10-trazabilidad-criterios.md` con cada criterio, sus tests y los no automatizables (T9)
 - [x] 3.2 Ejecutar lint, typecheck y `npm test` dos veces seguidas sin fallos: 564 pruebas en verde (T9)
 - [x] 3.3 Pruebas de accesibilidad (axe) sobre las pantallas principales: 16 situaciones sin infracciones y dos correcciones en la interfaz (T9)
-- [ ] 3.4 Dejar trazado el uso de IA en la implementación y las pruebas (T9, siguiente paso)
+- [x] 3.4 Dejar trazado el uso de IA en la implementación y las pruebas: `docs/11-uso-de-ia.md` y `prompts.md` §8 (T9)

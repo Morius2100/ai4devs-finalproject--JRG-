@@ -208,7 +208,7 @@ Todas las rutas (salvo registro y endpoints de Auth.js) requieren sesión: la co
 | `POST /api/me/friend-requests/:id/accept` | —                                                                                                        | `200 { status: "FRIENDS" }`                    | `404` no existe o no eres el destinatario       | HU-15               |
 | `DELETE /api/me/friend-requests/:id`   | —                                                                                                           | `200 { status: "NONE" }`                       | `404` no existe o no eres el destinatario       | HU-15               |
 
-`PUT /friendship` crea una solicitud; si la otra persona ya había solicitado la amistad, la acepta. Las rutas de inicio de sesión, token, registro y `PUT /friendship` responden `429` con `Retry-After` al superar el límite de intentos (TKT-082).
+`PUT /friendship` crea una solicitud; si la otra persona ya había solicitado la amistad, la acepta. En `/api/me/friend-requests/:id`, `:id` es el identificador de la **persona que envió** la solicitud (la solicitud no tiene id propio: su clave es la pareja solicitante-destinatario). Las rutas de inicio de sesión, token, registro y `PUT /friendship` responden `429` con `Retry-After` al superar el límite de intentos (TKT-082).
 
 Las imágenes subidas se devuelven como ruta relativa (`/api/media/…`) y las externas con su URL completa.
 
