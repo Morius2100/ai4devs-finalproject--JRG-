@@ -1,0 +1,6 @@
+# Los scripts de shell y Gradle se ejecutan en Linux (CI y contenedores): siempre con saltos de línea LF,
+# aunque se editen en Windows.
+*.sh text eol=lf
+android/gradlew text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf

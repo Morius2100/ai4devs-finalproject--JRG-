@@ -8,7 +8,7 @@ Guía para publicar Opina gratis con despliegue automático desde GitHub:
 | PostgreSQL                 | **Neon**              | 1 proyecto, ~0,5 GB; se suspende sin uso        |
 | Imágenes (S3 compatible)   | **Cloudflare R2**     | 10 GB; activar R2 puede pedir un método de pago |
 
-Cada `git push` a `main` publica en producción; cada rama o PR recibe una URL de vista previa. El diagrama de todo el flujo (CI, despliegue y entornos) y los huecos que quedan están en [`12-ci-cd.md`](12-ci-cd.md); en particular, **el despliegue no espera al resultado del CI**.
+Cada `git push` a `main` publica en producción; cada rama o PR recibe una URL de vista previa. El diagrama de todo el flujo (CI, despliegue y entornos) y los huecos que quedan están en [`12-ci-cd.md`](12-ci-cd.md); en particular, con `main` protegida (solo PR con el check `ci` en verde) lo que se despliega ya pasó el CI, pero **Vercel no espera de forma explícita a su resultado**. La aplicación también se puede ejecutar en un contenedor (`Dockerfile`, `docker compose --profile app up`), pensado para reproducirla en local o en el CI; el destino de producción sigue siendo Vercel.
 
 ## 8.1 Qué hay preparado en el proyecto
 

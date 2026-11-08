@@ -1,24 +1,30 @@
 # 12 · Integración y despliegue continuos (CI/CD)
 
-Cómo llega un cambio desde el ordenador hasta producción, qué comprueba cada paso y qué falta por cerrar. Describe lo que **existe hoy** (`.github/workflows/ci.yml`, `scripts/vercel-build.mjs`, `docker-compose.yml`), no un diseño futuro. Los pasos de creación del entorno de producción están en [`08-despliegue-vercel.md`](08-despliegue-vercel.md).
+Cómo llega un cambio desde el ordenador hasta producción, qué comprueba cada paso y qué falta por cerrar. Describe lo que **existe en el repositorio** (`.github/workflows/ci.yml`, `.github/rulesets/main.json`, `scripts/vercel-build.mjs`, `Dockerfile`, `docker-compose.yml`). Los pasos de creación del entorno de producción están en [`08-despliegue-vercel.md`](08-despliegue-vercel.md).
 
 ## 12.1 Visión general
 
-Hay **dos canalizaciones independientes** que se disparan con el mismo `git push`: el CI de GitHub Actions comprueba el código y la integración de Vercel lo construye y lo publica. **La segunda no espera a la primera** (ver §12.5).
+`main` está pensada para recibir cambios **solo mediante pull request con el check `ci` en verde** (§12.6). Como Vercel despliega `main` al recibir una fusión, lo que llega a producción ya ha pasado el CI. Vercel sigue siendo una integración aparte: **no espera de forma explícita** al CI (§12.5).
 
 ```mermaid
 flowchart LR
-    DEV["Desarrollo local<br/>npm run dev<br/>Docker: PostgreSQL + MinIO"]
+    DEV["Desarrollo local<br/>npm run dev<br/>Docker: PostgreSQL + MinIO<br/>(o toda la app: profile app)"]
     GH["GitHub<br/>repositorio del proyecto"]
+    MAIN["main protegida<br/>ruleset: PR + check ci"]
 
     subgraph CI["GitHub Actions · workflow CI"]
         direction TB
-        C1["Node 22 + npm ci"] --> C2["prisma migrate deploy<br/>+ seed (PostgreSQL 16 de servicio)"]
-        C2 --> C3["lint · typecheck"]
-        C3 --> C4["Vitest<br/>unitarias + integración"]
-        C4 --> C5["next build"]
-        C5 --> C6["Playwright e2e<br/>+ axe (accesibilidad)"]
-        C6 --> C7["Informe de Playwright<br/>(artefacto, 7 días)"]
+        subgraph JCI["job ci · requerido"]
+            direction TB
+            C1["Node 22 + npm ci"] --> C2["prisma migrate deploy<br/>+ seed (PostgreSQL 16 de servicio)"]
+            C2 --> C3["lint · typecheck"]
+            C3 --> C4["Vitest<br/>unitarias + integración"]
+            C4 --> C5["next build"]
+            C5 --> C6["Playwright e2e<br/>+ axe (accesibilidad)"]
+            C6 --> C7["Informe de Playwright<br/>(artefacto, 7 días)"]
+        end
+        JAPK["job apk · informativo<br/>JDK 21 + Gradle<br/>→ app-debug.apk (14 días)"]
+        JDK["job docker · informativo<br/>compose --profile app --wait<br/>+ curl /api/health"]
     end
 
     subgraph CD["Vercel · integración con GitHub"]
@@ -36,18 +42,21 @@ flowchart LR
     PREV["Vista previa<br/>URL por rama o PR"]
     NEON[("Neon<br/>PostgreSQL")]
     R2[("Cloudflare R2<br/>imágenes")]
-    APK["APK Android<br/>(manual)"]
+    APK["APK Android<br/>(descarga del artefacto)"]
 
-    DEV -- "git push / PR" --> GH
-    GH -- "push a main o PR" --> CI
-    GH -- "push a main o rama" --> CD
+    DEV -- "git push de una rama" --> GH
+    GH -- "pull request" --> CI
+    GH -- "rama o PR" --> CD
+    JCI -- "check ci en verde" --> MAIN
+    MAIN -- "al fusionar" --> CD
     V7 -- "main" --> PROD
-    V7 -- "otras ramas y PR" --> PREV
+    V7 -- "ramas y PR" --> PREV
     PROD --- NEON
     PROD --- R2
     PREV --- NEON
+    JAPK --> APK
     PROD -. "API publicada" .-> APK
-    CI -. "no bloquea el despliegue" .-> CD
+    JCI -. "Vercel no lo espera de forma explícita" .-> CD
 ```
 
 ## 12.2 Entornos
@@ -55,16 +64,17 @@ flowchart LR
 | Entorno | Qué ejecuta | Base de datos | Imágenes | Cómo se llega |
 | --- | --- | --- | --- | --- |
 | **Local** | `npm run dev` | PostgreSQL 16 en Docker (puerto 5433; bases `opina` y `opina_test`) | MinIO en Docker (9000 y 9001) | `docker compose up -d` |
-| **CI** | Workflow `CI` en `ubuntu-latest`, Node 22 | PostgreSQL 16 como servicio (`opina_test`), con migraciones y seed | En memoria (`IMAGE_STORAGE=memory`), sin MinIO | `push` a `main` y cualquier PR |
-| **Vista previa** | Despliegue de Vercel por rama o PR | La de Neon configurada para _Preview_ (sin migrar, salvo `RUN_MIGRATIONS=1`) | R2 | Push a una rama |
-| **Producción** | Despliegue de Vercel de `main` | Neon | Cloudflare R2 | Push a `main` |
-| **APK Android** | Interfaz empaquetada con Capacitor | La API de producción | La API (`/api/media`) | Manual: `npm run build:mobile` y `npm run android:apk` |
+| **Local en contenedor** | La aplicación completa (`Dockerfile`) | La misma PostgreSQL de Docker | La misma MinIO | `docker compose --profile app up -d --build` (puerto 3000) |
+| **CI** | Workflow `CI` en `ubuntu-latest`, Node 22 | PostgreSQL 16 como servicio (`opina_test`), con migraciones y seed | En memoria (`IMAGE_STORAGE=memory`), sin MinIO | Cualquier PR y `push` a `main` |
+| **Vista previa** | Despliegue de Vercel por rama o PR | La de Neon configurada para _Preview_ (sin migrar, salvo `RUN_MIGRATIONS=1`) | R2 | Push de una rama |
+| **Producción** | Despliegue de Vercel de `main` | Neon | Cloudflare R2 | Fusionar una PR en `main` |
+| **APK Android** | Interfaz empaquetada con Capacitor | La API de producción | La API (`/api/media`) | Descargar `opina-debug-apk` del CI, o `npm run build:mobile` y `npm run android:apk` |
 
-Los contenedores de Docker son solo los **servicios** (PostgreSQL y MinIO). La aplicación no se empaqueta en un contenedor porque Vercel la construye y la sirve.
+## 12.3 Los jobs del CI
 
-## 12.3 El CI, paso a paso
+Definidos en [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). Se ejecutan en `push` a `main` y en todas las pull requests.
 
-Definido en [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). Se ejecuta en `push` a `main` y en todas las pull requests.
+### Job `ci` (requerido)
 
 ```mermaid
 flowchart TB
@@ -93,6 +103,14 @@ flowchart TB
 | `npm run build` | Que Next.js compila y las variables de entorno son válidas | Error de compilación |
 | `npm run test:e2e` | Flujos completos en Chromium y axe-core | Falla un e2e o hay infracciones de accesibilidad |
 
+### Job `apk` (informativo)
+
+Construye la APK de depuración: `npm run build:mobile` (export estático y `cap sync android`), plataforma de Android 36 si falta, y `./gradlew assembleDebug` con JDK 21 y caché de Gradle. Sube `app-debug.apk` como artefacto `opina-debug-apk` durante 14 días. Está firmada con la clave de depuración, se instala directamente y apunta al servidor de Vercel por HTTPS. **No es un check requerido**: tarda varios minutos y no debe bloquear cambios ajenos a la app. La APK de _release_ para Google Play queda fuera (necesita un _keystore_ propio).
+
+### Job `docker` (informativo)
+
+Ejecuta `docker compose --profile app up -d --build --wait`, que construye la imagen, arranca la aplicación con PostgreSQL y MinIO, **aplica las migraciones sobre una base de datos vacía** y espera a que el `HEALTHCHECK` pase; después pide `/api/health`. Si falla, muestra los registros del contenedor. No publica la imagen.
+
 ## 12.4 El despliegue, paso a paso
 
 Lo hace Vercel con [`scripts/vercel-build.mjs`](../scripts/vercel-build.mjs) (`npm run vercel-build`):
@@ -106,18 +124,62 @@ Si algo falla, Vercel **no publica** esa versión y la anterior sigue en producc
 
 **Rollback:** en Vercel, _Deployments → Promote to Production_ sobre un despliegue anterior. La base de datos no se revierte; por eso las migraciones deben ser compatibles con la versión anterior.
 
-## 12.5 Lo que falta (estado a 8 de noviembre de 2026)
+## 12.5 Estado y huecos (8 de noviembre de 2026)
 
-| Hueco | Detalle | Qué hacer |
+| Punto | Estado | Detalle |
 | --- | --- | --- |
-| **El CI estaba en rojo desde el primer commit** | Fallaba en `npm ci`: el lock se generó con npm 11 y el CI usa npm 10 («Missing: magicast@0.3.5 from lock file»). Ningún paso posterior llegó a ejecutarse. | **Corregido en local** (lock regenerado con npm 10, que también vale para npm 11; el CI define `IMAGE_STORAGE=memory`). **Falta comprobarlo en GitHub tras el push**: pueden aparecer fallos nuevos en los pasos que nunca se ejecutaron. |
-| **El despliegue no espera al CI** | Vercel publica al recibir el push aunque el CI falle. Ya ocurrió: el 8 de noviembre se desplegó a producción con el CI en rojo. | En GitHub, proteger `main` exigiendo el check `ci` en las PR; en Vercel, activar _Deployment Checks_ o desplegar desde Actions. |
-| **Sin PR obligatoria** | Se trabaja con `push` directo a `main`, así que el CI llega tarde. | Una rama y una PR por cambio, con el CI como requisito. |
-| **La APK no se construye en CI** | Se compila a mano. | Opcional: un workflow que construya la APK de depuración como artefacto. |
-| **No hay contenedor de la aplicación** | Solo PostgreSQL y MinIO están en Docker. | Opcional: un `Dockerfile` y un servicio `app` en `docker-compose.yml` para reproducir el entorno completo en local. |
-| **Sin revisión automática de dependencias** | `npm audit` avisa de vulnerabilidades, que no se revisan. | Opcional: Dependabot. |
+| **CI en rojo desde el primer commit** | Corregido en local, **sin comprobar en GitHub** | Fallaba en `npm ci` (lock de npm 11 frente al npm 10 de Node 22). Ya se regeneró el lock. Los pasos posteriores nunca se habían ejecutado en GitHub y pueden revelar fallos nuevos. |
+| **`main` protegida** | **Preparada, falta importar el _ruleset_** | [`.github/rulesets/main.json`](../.github/rulesets/main.json) lo define. Hay que importarlo a mano (§12.6) y solo cuando el CI esté en verde. |
+| **Contenedor de la aplicación** | **Hecho y probado en local** | `Dockerfile` y servicio `app`: la imagen se construye (667 MB), arranca sana, corre como usuario `node`, aplica las migraciones y permite registrarse, iniciar sesión y crear un tema con imagen. El job `docker` aún no ha corrido en GitHub. |
+| **APK en el CI** | **Añadido, sin ejecutar** | El job `apk` no se ha probado ni en local ni en GitHub: puede necesitar ajustes (por ejemplo, la plataforma de Android). |
+| **Vercel no espera al CI de forma explícita** | **Hueco residual aceptado** | Con `main` protegida, lo que se despliega ya pasó el CI en su PR. Pero (a) si el propietario fusiona saltándose el check, o (b) si el CI falla sobre el commit de fusión, Vercel despliega igualmente. |
+| **Mejora futura para cerrarlo** | Opcional | Un job `deploy` con `needs: ci` que publique con la CLI de Vercel y desactivar el despliegue automático de `main` (`vercel.json`). Exige tres secretos en GitHub (`VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`) y mover el build al ejecutor de GitHub. |
+| **Revisión automática de dependencias** | Sin hacer | `npm audit` avisa de vulnerabilidades que nadie revisa. Opcional: Dependabot. |
 
-## 12.6 Cómo ver el estado
+## 12.6 Flujo de trabajo con ramas y pull requests
+
+Con `main` protegida **ya no se hace `git push origin main`**. Cada cambio sigue este camino:
+
+```bash
+git switch -c feat/mi-cambio          # una rama por cambio
+# … trabajar y commitear …
+git push -u origin feat/mi-cambio     # Vercel crea la vista previa de la rama
+# En GitHub: abrir la pull request. El check «ci» se ejecuta solo.
+# Con «ci» en verde: «Merge pull request». Vercel despliega main.
+git switch main && git pull           # volver a main actualizada
+```
+
+No hace falta que nadie apruebe la PR: el CI es la puerta de calidad.
+
+### Activar la protección (una sola vez, a mano)
+
+1. **Antes**, comprobar en la pestaña _Actions_ que el job `ci` pasa. Con un CI en rojo, la protección impediría fusionar cualquier cosa.
+2. En GitHub: repositorio → **Settings → Rules → Rulesets → New ruleset → Import a ruleset** → elegir `.github/rulesets/main.json` → **Create**.
+3. Si el importador rechaza la lista de excepciones, añadir a mano en _Bypass list_ el rol **Repository admin** con el modo **For pull requests only**.
+4. Comprobar: `git push origin main` con un commit nuevo debe rechazarse, también para el propietario.
+
+**Qué hace el _ruleset_:** exige PR, exige el check `ci` y que la rama esté al día, prohíbe `force push` y el borrado de `main`, y no pide aprobaciones. El propietario puede fusionar una PR saltándose el check en una urgencia (**solo mediante PR**, nunca con `push` directo); queda registrado en la propia PR.
+
+### Desactivarla
+
+_Settings → Rules → Rulesets → Proteger main_ → **Enforcement: Disabled** (o _Delete_). No hay que tocar nada en el repositorio.
+
+## 12.7 La aplicación en un contenedor
+
+```bash
+docker compose --profile app up -d --build   # PostgreSQL + MinIO + la aplicación → http://localhost:3000
+docker compose --profile app logs -f app     # registros (migraciones al arrancar)
+docker compose --profile app rm -sf app      # parar solo la aplicación y dejar PostgreSQL y MinIO
+```
+
+- El puerto 3000 es el de `npm run dev`: para uno de los dos.
+- La imagen se construye con valores **de relleno** para las variables que `next build` exige; los reales se pasan al arrancar. No lleva secretos.
+- Al arrancar aplica `prisma migrate deploy` (se omite con `RUN_MIGRATIONS=0`).
+- En un contenedor no hay `VERCEL` y `NODE_ENV` es `production`, así que el servicio define `AUTH_TRUST_HOST=true` (ver `src/server/auth/config.ts`).
+- `docker compose up -d` sin `--profile app` sigue arrancando solo PostgreSQL y MinIO.
+- El `Dockerfile` activa la salida `standalone` de Next.js con `NEXT_OUTPUT=standalone`; sin esa variable, el build de Vercel y el de la APK son los de siempre.
+
+## 12.8 Cómo ver el estado
 
 - **Último CI:** pestaña _Actions_ del repositorio, o
   `curl -s https://api.github.com/repos/Morius2100/ai4devs-finalproject--JRG-/actions/runs?per_page=1`

@@ -39,6 +39,9 @@ export const securityHeaders = [
 
 const webConfig: NextConfig = {
   images,
+  // Imagen de Docker (Dockerfile): salida mínima autocontenida. Solo con NEXT_OUTPUT=standalone,
+  // para no alterar el build de Vercel ni el export de la APK.
+  ...(process.env.NEXT_OUTPUT === "standalone" ? { output: "standalone" as const } : {}),
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

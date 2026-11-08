@@ -40,6 +40,34 @@ services:
       timeout: 5s
       retries: 10
 
+  # La aplicación en un contenedor (Dockerfile). Es opcional: solo arranca con el profile `app`,
+  # así `docker compose up -d` sigue levantando únicamente PostgreSQL y MinIO.
+  #   docker compose --profile app up -d --build     → http://localhost:3000
+  # Usa el puerto 3000: para `npm run dev` antes de arrancarla (o cambia el puerto de la izquierda).
+  app:
+    profiles: ["app"]
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      # Valores de DESARROLLO LOCAL, igual que los de postgres y minio de este fichero.
+      DATABASE_URL: "postgresql://opina:opina@postgres:5432/opina?schema=public"
+      AUTH_SECRET: "secreto-solo-para-desarrollo-local"
+      # En un contenedor no hay VERCEL y NODE_ENV es production: hay que confiar en el host.
+      AUTH_TRUST_HOST: "true"
+      S3_ENDPOINT: "http://minio:9000"
+      S3_REGION: "us-east-1"
+      S3_BUCKET: "opina-images"
+      S3_ACCESS_KEY_ID: "opina"
+      S3_SECRET_ACCESS_KEY: "opina123"
+      S3_PUBLIC_URL: "http://localhost:9000/opina-images"
+    ports:
+      - "3000:3000"
+
 volumes:
   opina_postgres_data:
   opina_minio_data:

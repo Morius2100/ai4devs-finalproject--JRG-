@@ -1,0 +1,37 @@
+# Lo que no debe entrar en el contexto de construcción de la imagen.
+node_modules
+.next
+out
+out-mobile
+build
+coverage
+playwright-report
+test-results
+tsconfig.tsbuildinfo
+
+# Secretos y entornos locales
+.env
+.env.*
+!.env.example
+
+# Control de versiones, editores y agentes
+.git
+.github
+.claude
+.vscode
+graphify-out
+AI4Devs-finalproject
+ai4devs-finalproject--JRG-
+
+# App Android y su compilación (no forman parte de la imagen web)
+android
+capacitor.config.ts
+assets
+
+# Documentación y pruebas
+docs
+openspec
+tests
+*.md
+Dockerfile
+docker-compose.yml

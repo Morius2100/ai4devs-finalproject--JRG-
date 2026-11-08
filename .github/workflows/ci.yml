@@ -80,3 +80,78 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  # APK de depuración (HU-16). Informativo: NO es un check requerido de `main` (tarda varios
+  # minutos y no debe bloquear cambios ajenos a la app). Apunta al servidor de Vercel por HTTPS.
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Configurar Java (JDK 21)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Interfaz estática y sincronización de Capacitor
+        run: npm run build:mobile
+
+      - name: Plataforma de Android 36 (si el ejecutor no la trae)
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Configurar Gradle (con caché)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar la APK de depuración
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Subir la APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: opina-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  # La aplicación en un contenedor: construye la imagen, la arranca con PostgreSQL y MinIO y
+  # comprueba /api/health (aplica las migraciones al arrancar). No publica nada.
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Construir y arrancar con Docker Compose
+        run: docker compose --profile app up -d --build --wait --wait-timeout 240
+
+      - name: Prueba de humo (/api/health)
+        run: curl -fsS http://localhost:3000/api/health
+
+      - name: Registros del contenedor (si algo falla)
+        if: failure()
+        run: docker compose --profile app logs --no-color app
+
+      - name: Parar y limpiar
+        if: always()
+        run: docker compose --profile app down -v
