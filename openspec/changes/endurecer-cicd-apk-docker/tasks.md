@@ -1,4 +1,4 @@
-> Origen: **Revisión 1 de LIDR, tarea T10** y los huecos de `docs/12-ci-cd.md` §12.5. No hay ticket TKT. Las tareas marcadas **(manual)** las hace el propietario en GitHub o Vercel con sus credenciales; este cambio solo deja los pasos escritos. **Orden obligatorio:** el grupo 1 antes que el 2.
+> Origen: **Revisión 1 de LIDR, tarea T10** y los huecos de `docs/12-ci-cd.md` §12.5. No hay ticket TKT. Decisiones del 8 de noviembre de 2026: excepción del propietario solo vía PR, solo proteger `main` (sin job `deploy`), `apk` informativo y sin revisión obligatoria. Las tareas marcadas **(manual)** las hace el propietario en GitHub con sus credenciales. **Orden obligatorio:** el grupo 1 antes que el 2.
 
 ## 1. Antes de nada: un CI que pasa
 
@@ -7,22 +7,19 @@
 
 ## 2. Rama main protegida
 
-- [ ] 2.1 Crear `.github/rulesets/main.json`: PR obligatoria, check requerido `ci`, sin `force push` ni borrado, rama actualizada, sin excepción para el propietario (T10)
-- [ ] 2.2 **(manual)** Importar el _ruleset_ en _Settings → Rules → Rulesets → Import_ y comprobar que un `push` directo a `main` se rechaza (T10)
-- [ ] 2.3 Documentar el flujo de rama y PR en `docs/12-ci-cd.md`, con cómo deshacer la protección (T10)
-- [ ] 2.4 Probar el flujo completo con una PR de prueba: CI en rojo no deja fusionar; en verde, sí (T10)
+- [ ] 2.1 Crear `.github/rulesets/main.json`: PR obligatoria, check requerido `ci`, sin `force push` ni borrado, rama actualizada, cero aprobaciones, excepción del propietario con `bypass_mode: pull_request` (T10)
+- [ ] 2.2 **(manual)** Importar el _ruleset_ en _Settings → Rules → Rulesets → Import_ y comprobar que un `push` directo a `main` se rechaza, también al propietario (T10)
+- [ ] 2.3 Documentar el flujo de rama y PR en `docs/12-ci-cd.md`, con la excepción del propietario y cómo deshacer la protección (T10)
+- [ ] 2.4 Probar el flujo con una PR de prueba: CI en rojo no deja fusionar; en verde, sí, sin pedir aprobación (T10)
 
-## 3. Vercel espera al CI
+## 3. Producción tras la PR
 
-- [ ] 3.1 **(manual)** Crear el token de Vercel y guardar `VERCEL_TOKEN`, `VERCEL_ORG_ID` y `VERCEL_PROJECT_ID` como secretos del entorno `production` de GitHub (T10)
-- [ ] 3.2 Añadir el job `deploy` (`needs: ci`, solo `push` a `main`, `concurrency` propia) con `vercel pull`, `vercel build --prod` y `vercel deploy --prebuilt --prod` (T10)
-- [ ] 3.3 Crear `vercel.json` con `git.deploymentEnabled.main = false`; las vistas previas se mantienen (T10)
-- [ ] 3.4 Comprobar que con el CI en rojo no se despliega y que con el CI en verde sí, y que `/api/health` responde tras el despliegue (T10)
-- [ ] 3.5 Actualizar `docs/08-despliegue-vercel.md` y `docs/12-ci-cd.md` con el nuevo camino y el rollback (T10)
+- [ ] 3.1 Comprobar que, tras fusionar una PR, Vercel despliega `main` y que las ramas y PR siguen recibiendo su vista previa (T10)
+- [ ] 3.2 Documentar el hueco residual (excepción del propietario y CI que falla sobre el commit de fusión) y la mejora futura del job `deploy` con `needs: ci` en `docs/12-ci-cd.md` y `docs/08-despliegue-vercel.md` (T10)
 
 ## 4. APK en el CI
 
-- [ ] 4.1 Añadir el job `apk`: Node 22, Temurin 21, caché de Gradle, `npm run build:mobile`, `chmod +x android/gradlew`, `assembleDebug` (T10)
+- [ ] 4.1 Añadir el job `apk` (informativo): Node 22, Temurin 21, caché de Gradle, `npm run build:mobile`, `chmod +x android/gradlew`, `assembleDebug` (T10)
 - [ ] 4.2 Subir `app-debug.apk` como artefacto de 14 días; instalar la plataforma de Android 36 si el ejecutor no la trae (T10)
 - [ ] 4.3 `.gitattributes` con `eol=lf` para `gradlew` y los scripts de shell (T10)
 - [ ] 4.4 Descargar el artefacto, instalarlo en un móvil y comprobar que se conecta al servidor de producción (T10)
@@ -38,6 +35,6 @@
 
 ## 6. Cierre
 
-- [ ] 6.1 Actualizar `docs/12-ci-cd.md`: diagrama final con `deploy`, `apk` y `docker`, y quitar de la tabla de huecos lo que ya esté cerrado (T10)
+- [ ] 6.1 Actualizar `docs/12-ci-cd.md`: diagrama final con `apk` y `docker` y la protección de `main`, y quitar de la tabla de huecos lo que ya esté cerrado (T10)
 - [ ] 6.2 Pruebas del grupo: `npm run lint`, `npm run typecheck`, `npm test`, y comprobar que el workflow es válido (T10)
 - [ ] 6.3 Sincronizar con el repositorio de código y el de entrega, y actualizar el README de entrega (T10)
