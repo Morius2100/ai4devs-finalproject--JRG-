@@ -10,7 +10,7 @@
 
 **Non-Goals:**
 - Reescribir los tests existentes para añadirles el identificador.
-- Pruebas de accesibilidad y de rendimiento (siguiente paso).
+- Pruebas de rendimiento.
 - Cubrir la APK de forma automática.
 
 ## Decisions

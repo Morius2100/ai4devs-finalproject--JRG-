@@ -29,7 +29,9 @@ export function MainMenu() {
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center justify-between bg-brand-yellow px-4">
-      <Link href="/" aria-label="Opina" className="flex min-h-11 items-center text-on-yellow">
+      <Link href="/" className="flex min-h-11 items-center text-on-yellow">
+        {/* El logotipo es gráfico («O» + «pina»): el nombre accesible va en texto oculto (WCAG 2.5.3). */}
+        <span className="sr-only">Opina</span>
         <OpinaLogo className="text-3xl" />
       </Link>
 

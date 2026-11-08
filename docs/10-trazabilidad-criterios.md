@@ -113,4 +113,13 @@ Abreviaturas: **U** = `tests/unit/…`, **I** = `tests/integration/…`, **E** =
 | CA-18.1 colores en modo claro y oscuro | Se comprueban las clases, no el render en cada tema |
 | CA-03.2 media pantalla de imagen | El e2e existe, pero falla en una base local donde `ana` ya votó ese tema |
 
-Tampoco hay pruebas automáticas de **accesibilidad** (axe) ni de rendimiento; es el siguiente paso de T9.
+## Accesibilidad
+
+[`tests/e2e/accesibilidad.spec.ts`](../tests/e2e/accesibilidad.spec.ts) pasa **axe-core** (reglas WCAG 2.0 y 2.1, niveles A y AA, en el navegador real, con contraste de color) por 16 situaciones: inicio de sesión (con y sin error), registro (con y sin errores), pantalla principal, menú abierto, tema sin votar, diálogo de justificación, tema votado, crear tema (con y sin error), notificaciones, personas, perfil ajeno, mi perfil, editar perfil y mis amigos. Resultado: **sin infracciones**.
+
+La primera ejecución encontró dos infracciones reales de «etiqueta en el nombre» (WCAG 2.5.3), ya corregidas:
+
+- el enlace del logotipo tenía `aria-label="Opina"` pero el texto visible es «pina» (la «O» es un gráfico): ahora el nombre sale de un texto oculto;
+- los enlaces de las historias tenían un `aria-label` que no contenía el texto visible (contador y nombre): ahora el nombre se compone con texto oculto más el nombre visible.
+
+Lo que axe no puede comprobar (orden de foco, uso con lector de pantalla, textos alternativos con sentido) sigue necesitando revisión manual. Tampoco hay pruebas automáticas de rendimiento.

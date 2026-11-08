@@ -82,11 +82,13 @@ describe("StoriesBar (TKT-057)", () => {
     renderWithClient(<StoriesBar />);
 
     await screen.findByRole("navigation", { name: "Historias de tus amigos" });
-    expect(screen.getAllByRole("link").map((l) => l.getAttribute("aria-label"))).toEqual([
-      "Nuevo tema de carla",
-      "Nuevo tema de bruno",
-      "Nuevo tema de dani",
-    ]);
+    // El nombre accesible sale del contenido (texto oculto + nombre visible), no de un aria-label:
+    // así contiene el texto que se ve (WCAG 2.5.3, regla label-content-name-mismatch de axe).
+    const links = screen.getAllByRole("link");
+    expect(links.map((l) => l.getAttribute("aria-label"))).toEqual([null, null, null]);
+    for (const [index, name] of ["carla", "bruno", "dani"].entries()) {
+      expect(links[index]).toHaveAccessibleName(`Nuevo tema de ${name}`);
+    }
   });
 
   it("Sin historias no pinta nada ni deja hueco", async () => {

@@ -28,9 +28,6 @@ export function StoriesBar() {
             <li key={story.author.id} className="shrink-0 snap-start">
               <Link
                 href={`/tema?id=${story.topicIds[0]}`}
-                aria-label={
-                  count === 1 ? `Nuevo tema de ${name}` : `${count} temas nuevos de ${name}`
-                }
                 className="flex w-[72px] flex-col items-center gap-1"
               >
                 <span className="relative rounded-full bg-[conic-gradient(var(--brand-yellow),var(--brand-green),var(--brand-yellow))] p-[3px]">
@@ -46,10 +43,12 @@ export function StoriesBar() {
                     </span>
                   ) : null}
                 </span>
-                <span
-                  aria-hidden
-                  className="w-full truncate text-center text-xs font-semibold text-ink"
-                >
+                {/* El nombre accesible se compone con texto oculto + el nombre visible,
+                    para que contenga el texto que se ve (WCAG 2.5.3). */}
+                <span className="sr-only">
+                  {count === 1 ? "Nuevo tema de" : `${count} temas nuevos de`}
+                </span>{" "}
+                <span className="w-full truncate text-center text-xs font-semibold text-ink">
                   {name}
                 </span>
               </Link>
