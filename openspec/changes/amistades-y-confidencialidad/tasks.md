@@ -5,7 +5,7 @@
 - [x] 1.1 Decidir Q-04: aceptar solicitud y aceptación de amistad (Opción A del design) y quitarla de «No forman parte del producto» en `docs/01-producto.md` §5 (Relacionado: TKT-036, S-01)
 - [x] 1.2 Actualizar `docs/01-producto.md` (S-02 y Q-01/Q-04), `docs/04-historias-usuario.md` (HU-15, CA-15.1 y nuevos criterios de aceptación y rechazo) y `docs/05-tickets.md` con los tickets nuevos (S-01)
 - [x] 1.3 Actualizar `docs/02-arquitectura.md` (endpoints de solicitudes y política de acceso) y `docs/03-modelo-datos.md` (tabla `friend_requests` y, si procede, `rate_limits`) (S-01, S-03)
-- [ ] 1.4 Revisar el README de entrega (§1.2 supuesto «Relación de amistad», §2.5 Seguridad, §4 API) y repetir la copia a `AI4Devs-finalproject` (T2)
+- [x] 1.4 Revisar el README de entrega (§1.2 supuesto «Relación de amistad», §2.5 Seguridad, §4 API) y repetir la copia a `AI4Devs-finalproject` (T2)
 - [x] 1.5 Verificar que cada requisito de las specs tiene su criterio en las historias y que `openspec validate amistades-y-confidencialidad --strict` pasa
 
 ## 2. Amistad con consentimiento (S-01, crítico)
