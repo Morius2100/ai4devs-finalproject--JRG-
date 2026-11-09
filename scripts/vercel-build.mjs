@@ -12,6 +12,36 @@
 import { spawnSync } from "node:child_process";
 import { seedBlockedReason } from "./seed-guard.mjs";
 
+// Las mismas variables que exige src/server/env.ts. `next build` importa ese módulo al
+// recoger los datos de las páginas, así que sin ellas el build falla igualmente; se
+// comprueban antes para que el error diga qué entorno y qué rama de Vercel las necesitan.
+const REQUIRED_ENV = [
+  "DATABASE_URL",
+  "AUTH_SECRET",
+  "S3_ENDPOINT",
+  "S3_REGION",
+  "S3_BUCKET",
+  "S3_ACCESS_KEY_ID",
+  "S3_SECRET_ACCESS_KEY",
+  "S3_PUBLIC_URL",
+];
+const missingEnv = REQUIRED_ENV.filter((name) => !process.env[name]?.trim());
+if (missingEnv.length > 0) {
+  const target = process.env.VERCEL_ENV ?? "sin definir";
+  const branch = process.env.VERCEL_GIT_COMMIT_REF ?? "sin definir";
+  console.error(
+    [
+      `Faltan variables de entorno en este build (VERCEL_ENV=${target}, rama ${branch}):`,
+      ...missingEnv.map((name) => `  - ${name}`),
+      "En Vercel → Settings → Environment Variables, defínelas para este entorno.",
+      'Si es Preview, comprueba que aplican a "All Preview branches" o a esta rama exacta,',
+      "y vuelve a desplegar: los cambios de variables solo afectan a los despliegues nuevos.",
+      "Guía: docs/08-despliegue-vercel.md §8.5 y §8.9.",
+    ].join("\n"),
+  );
+  process.exit(1);
+}
+
 const seedBlocked = seedBlockedReason(process.env);
 if (seedBlocked) {
   console.error(seedBlocked);
