@@ -51,7 +51,7 @@ En el panel de Cloudflare → **R2 Object Storage**:
 ## 8.5 Paso 4 — Proyecto en Vercel
 
 1. En [vercel.com](https://vercel.com) → **Add New → Project → Import Git Repository** → elige el repositorio. Vercel detecta Next.js; no cambies los comandos (usará `vercel-build`).
-2. En **Environment Variables** añade (para _Production_ y _Preview_):
+2. En **Environment Variables** añade (para _Production_ y _Preview_). Todas salvo `AUTH_URL` son obligatorias **en los dos entornos**: el build las valida (`src/server/env.ts`) y `vercel-build` se detiene, antes de compilar, si falta alguna. En _Preview_, deja la rama en **All Preview branches**: una variable acotada a una rama (por ejemplo `JRGA`) no llega a las demás. Pasar una variable de _Production_ a _Preview_ la **quita** de producción: el siguiente despliegue de `main` fallaría.
 
 | Variable               | Valor                                                                                              |
 | ---------------------- | -------------------------------------------------------------------------------------------------- |
@@ -124,6 +124,7 @@ Como la URL de Vercel no cambia entre despliegues, solo hay que recompilar la AP
 | Síntoma                                                | Causa / solución                                                                            |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
 | El build falla con «Variables de entorno inválidas»    | Falta alguna variable de 8.5 en el entorno que se está construyendo (_Preview_ incluido)    |
+| «Faltan variables de entorno en este build» o `AUTH_SECRET: Required` | La variable no existe en ese entorno o está acotada a otra rama: en _Preview_, «All Preview branches»; en _Production_, vuelve a crearla (mismo valor; uno nuevo cierra las sesiones web y los tokens de la APK). Después, despliegue **nuevo** (commit o _Redeploy_) |
 | `prepared statement "s0" already exists`               | Añade `&pgbouncer=true` a `DATABASE_URL` (cadena con _pooling_)                             |
 | `413` o `FUNCTION_PAYLOAD_TOO_LARGE` al subir imágenes | La imagen supera 4 MB                                                                       |
 | `SignatureDoesNotMatch` / `AccessDenied` al subir      | Endpoint, región (`auto`) o token de R2 incorrectos, o el token no incluye el bucket        |

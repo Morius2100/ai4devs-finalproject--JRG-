@@ -2,8 +2,8 @@
 
 ## 1. Antes de nada: un CI que pasa
 
-- [ ] 1.1 Hacer push y comprobar en GitHub que el CI pasa `npm ci` y llega al final; corregir lo que falle (cierra la tarea 4.1 de `documentar-ci-cd`) (T10)
-- [ ] 1.2 Archivar `documentar-ci-cd` para que su capacidad `ci-cd` pase a las specs principales (T10)
+- [x] 1.1 Push hecho; el CI pasa en GitHub (los jobs `ci`, `apk` y `docker`). Hizo falta corregir un e2e de accesibilidad que no esperaba a que cargase el tema (T10)
+- [x] 1.2 `documentar-ci-cd` archivado: la capacidad `ci-cd` está en las specs principales (T10)
 
 ## 2. Rama main protegida
 

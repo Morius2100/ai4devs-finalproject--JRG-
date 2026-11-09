@@ -19,5 +19,5 @@
 
 ## 4. Verificación en GitHub
 
-- [ ] 4.1 Tras el push, comprobar que el CI pasa `npm ci` y revisar los pasos siguientes, que nunca se habían ejecutado (T10)
-- [ ] 4.2 Decidir si se protege `main` exigiendo el CI y si Vercel espera a sus resultados (T10)
+- [x] 4.1 Tras el push, el CI pasa `npm ci` y todos los pasos siguientes (confirmado en GitHub el 9 de noviembre de 2026; hizo falta corregir un e2e de accesibilidad) (T10)
+- [x] 4.2 Decidido en el cambio `endurecer-cicd-apk-docker`: `main` protegida con un ruleset (PR + check `ci`); Vercel no espera de forma explícita, hueco residual aceptado (T10)
