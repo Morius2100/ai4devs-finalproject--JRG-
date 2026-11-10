@@ -189,6 +189,7 @@ Todas las rutas (salvo registro y endpoints de Auth.js) requieren sesión: la co
 | `GET /api/topics?cursor=`              | Sin `q` → tendencias                                                                                        | `200 { items: TopicSummary[], nextCursor }`    | —                                               | HU-01               |
 | `GET /api/topics?q=texto&cursor=`      | `q` 1–100 caracteres                                                                                        | `200 { items: TopicSummary[], nextCursor }`    | `400`                                           | HU-02               |
 | `GET /api/topics/:id`                  | —                                                                                                           | `200 TopicDetail`                              | `404` inexistente o sin acceso                  | HU-03, HU-11        |
+| `DELETE /api/topics/:id`               | — (solo el autor)                                                                                           | `204`                                          | `401`; `404` inexistente o no es el autor       | HU-23               |
 | `POST /api/topics/:id/votes`           | `{ value: "UP"\|"DOWN", justification?: string ≤ 500 }`                                                     | `201 { positiveVotes, negativeVotes, myVote }` | `400`, `404`, `409` ya votado                   | HU-04, HU-05        |
 | `GET /api/topics/:id/opinions?cursor=` | —                                                                                                           | `200 { items: Opinion[], nextCursor }`         | `403` si no ha votado, `404`                    | HU-07               |
 | `POST /api/topics`                     | `multipart/form-data`: `title` (3–120), `visibility` (`PUBLIC`\|`PRIVATE`), `image?` (JPEG/PNG/WebP ≤ 4 MB) | `201 { id }`                                   | `400`, `413`, `415`                             | HU-08..HU-10, HU-12 |
@@ -233,6 +234,8 @@ type TopicDetail = {
   imageUrl: string | null;
   visibility: "PUBLIC" | "PRIVATE";
   myVote: "UP" | "DOWN" | null;
+  // Verdadero si el visitante creó el tema; solo decide si se muestra la papelera (HU-23)
+  isAuthor: boolean;
   // Solo presentes si myVote !== null
   results?: { positiveVotes: number; negativeVotes: number };
 };

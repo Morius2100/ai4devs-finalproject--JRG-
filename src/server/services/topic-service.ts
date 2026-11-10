@@ -38,6 +38,9 @@ export type TopicDetail = {
   imageUrl: string | null;
   visibility: Visibility;
   myVote: VoteValue | null;
+  // Verdadero si el visitante creó el tema. Solo decide si la interfaz muestra la
+  // papelera (HU-23); el servidor comprueba la autoría al borrar. No expone el id del autor.
+  isAuthor: boolean;
   // Solo presentes si `myVote` no es nulo (docs/02-arquitectura.md §2.5,
   // supuesto S-03: no se filtran totales a quien no ha votado).
   results?: { positiveVotes: number; negativeVotes: number };
@@ -240,10 +243,37 @@ export const TopicService = {
       imageUrl: toMediaUrl(topic.imageUrl, { signed: topic.visibility === "PRIVATE" }),
       visibility: topic.visibility,
       myVote: vote?.value ?? null,
+      isAuthor: topic.authorId === viewerId,
       ...(vote
         ? { results: { positiveVotes: topic.positiveVotes, negativeVotes: topic.negativeVotes } }
         : {}),
     };
+  },
+
+  /**
+   * Borra un tema propio (HU-23, TKT-087). La autoría y el borrado son una sola
+   * sentencia (`authorId` en el `where`): `NotFoundError` si el identificador no es
+   * válido, el tema no existe o lo creó otra persona (mismo error en todos los
+   * casos). Los votos, notificaciones y visitas desaparecen por la cascada de la
+   * base de datos. La imagen se retira después, de mejor esfuerzo: un fallo del
+   * almacenamiento no deshace el borrado (queda un objeto sin referencias).
+   */
+  async delete(id: string, userId: string): Promise<void> {
+    if (!topicIdSchema.safeParse(id).success) {
+      throw new NotFoundError("Tema no encontrado");
+    }
+
+    const topic = await prisma.topic.findUnique({ where: { id }, select: { imageUrl: true } });
+    const { count } = await prisma.topic.deleteMany({ where: { id, authorId: userId } });
+    if (count === 0) {
+      throw new NotFoundError("Tema no encontrado");
+    }
+
+    if (topic?.imageUrl) {
+      await imageStorage.remove(topic.imageUrl).catch((removeError: unknown) => {
+        console.error("No se pudo borrar la imagen del tema borrado", removeError);
+      });
+    }
   },
 
   /**

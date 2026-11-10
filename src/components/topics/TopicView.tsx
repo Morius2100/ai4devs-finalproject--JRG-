@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DeleteTopicButton } from "@/components/topics/DeleteTopicButton";
 import { TopicImage } from "@/components/topics/TopicImage";
 import { VoteButtons, type VoteValue } from "@/components/topics/VoteButtons";
 import { VoteResults } from "@/components/topics/VoteResults";
@@ -66,8 +67,12 @@ export function TopicView({ topic: initialTopic }: { topic: TopicDetail }) {
           topic.imageUrl ? "-mt-4 rounded-t-3xl" : ""
         }`}
       >
-        <div className="px-5 pb-2 pt-5">
-          <h1 className="text-2xl font-extrabold leading-tight">{topic.title}</h1>
+        <div className="flex items-start justify-between gap-3 px-5 pb-2 pt-5">
+          <h1 className="min-w-0 break-words text-2xl font-extrabold leading-tight">
+            {topic.title}
+          </h1>
+          {/* Papelera solo para el autor (HU-23); el servidor vuelve a comprobarlo. */}
+          {topic.isAuthor ? <DeleteTopicButton topicId={topic.id} /> : null}
         </div>
 
         {hasVoted && topic.myVote && topic.results ? (

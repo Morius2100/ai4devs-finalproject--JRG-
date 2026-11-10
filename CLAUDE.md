@@ -62,6 +62,10 @@ Reglas:
 - Los totales y las opiniones solo se devuelven a quien ya ha votado (`results` solo si `myVote`; `listOpinions` responde `403` si no se ha votado).
 - Excepción: el script de semilla (`prisma/seed.ts`) fija los contadores de los temas de ejemplo directamente. No lo imites en código de la aplicación.
 
+## Borrado de temas
+
+**Solo el autor borra su tema, y solo desde su detalle** (`DELETE /api/topics/:id`, `TopicService.delete`). El servicio borra con `authorId` en el `where` y responde `404` si el tema no existe o no es suyo. Los votos, notificaciones y visitas desaparecen por la cascada de la base de datos (no se borran votos desde código) y la imagen se retira de mejor esfuerzo. La interfaz usa `isAuthor` del detalle solo para mostrar la papelera; no es una medida de seguridad.
+
 ## Otras reglas
 
 - **Entradas**: valida con Zod en cada endpoint; los ids se comprueban como UUID y las consultas SQL en bruto usan `Prisma.sql` con parámetros (escapa `%`, `_` y `\` en `LIKE`).
