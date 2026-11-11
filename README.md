@@ -9,10 +9,12 @@ Documentación técnica y planificación del proyecto **Opina**, preparada para 
 | **Nombre**            | Opina                                                                                                                                                                                                                                                                                                             |
 | **Descripción**       | Aplicación web y red social basada en un sistema de temas sobre los que los usuarios pueden votar (pulgar arriba / pulgar abajo) y justificar su voto de forma opcional. Funciona como un foro simplificado y dinámico. Los temas pueden ser públicos o privados (solo accesibles para los amigos de su creador). |
 | **Tipo**              | Aplicación web _mobile-first_                                                                                                                                                                                                                                                                                     |
-| **Repositorio / ZIP** | Pendiente de publicar. Ubicación local actual: `C:\Users\xurxo\Desktop\Opina` (sustituir por la URL del repositorio remoto o del ZIP cuando se publique).                                                                                                                                                         |
+| **Repositorio / ZIP** | **Ubicación definitiva:** [github.com/Morius2100/ai4devs-finalproject--JRG-](https://github.com/Morius2100/ai4devs-finalproject--JRG-), con el código, las pruebas, la integración continua, la documentación ([`docs/`](docs/)) y el plan SDD ([`openspec/`](openspec/)). No hace falta un ZIP: se obtiene con `git clone https://github.com/Morius2100/ai4devs-finalproject--JRG-.git`. Repositorio de entrega, con su `readme.md`, el registro de prompts y una copia de la documentación: [Morius2100/AI4Devs-finalproject](https://github.com/Morius2100/AI4Devs-finalproject/tree/feature/entrega-1-JRG) (rama `feature/entrega-1-JRG`). Aplicación desplegada: <https://ai4devs-finalproject-jrg.vercel.app/>.                                                                                                                                                         |
 | **Metodología**       | Spec Driven Development con OpenSpec (`openspec/`)                                                                                                                                                                                                                                                                |
 
 ## 2. Índice de la documentación
+
+Toda la especificación del proyecto está en la carpeta [`docs/`](docs/) de este repositorio: producto, arquitectura, modelo de datos, historias, tickets, stack, despliegue, seguridad, trazabilidad de pruebas, uso de IA y CI/CD. El plan ejecutable por cambios de especificación está en [`openspec/`](openspec/) (especificaciones consolidadas en [`openspec/specs/`](openspec/specs/) y cambios en [`openspec/changes/`](openspec/changes/)).
 
 | #   | Documento                                                        | Contenido                                                                     |
 | --- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -24,6 +26,11 @@ Documentación técnica y planificación del proyecto **Opina**, preparada para 
 | 6   | [docs/06-stack.md](docs/06-stack.md)                             | Stack tecnológico elegido y justificación                                     |
 | 7   | [docs/07-desglose-tareas-sdd.md](docs/07-desglose-tareas-sdd.md) | Desglose de tareas organizado para ejecución SDD                              |
 | 8   | [docs/08-despliegue-vercel.md](docs/08-despliegue-vercel.md)     | Despliegue gratuito en Vercel + Neon + Cloudflare R2 desde GitHub             |
+| 9   | [docs/09-revision-seguridad.md](docs/09-revision-seguridad.md)   | Revisión de seguridad y confidencialidad, con el estado de cada hallazgo      |
+| 10  | [docs/10-trazabilidad-criterios.md](docs/10-trazabilidad-criterios.md) | Trazabilidad de cada criterio de aceptación con sus tests               |
+| 11  | [docs/11-uso-de-ia.md](docs/11-uso-de-ia.md)                     | Uso de IA en el ciclo de desarrollo, con evidencias y prompts                 |
+| 12  | [docs/12-ci-cd.md](docs/12-ci-cd.md)                             | Integración y despliegue continuos: diagramas, entornos y huecos              |
+| 13  | [docs/mockups/](docs/mockups/)                                   | Diseños de las pantallas de personas y de perfil                              |
 
 ## 3. Estructura SDD (OpenSpec)
 

@@ -2,6 +2,108 @@
 
 Log of every prompt submitted by the user in this project.
 
+## 2026-09-26T18:25:21.208Z
+
+Documentación técnica y planificación del proyecto "Opina"
+1. Objetivo
+Crea la documentación técnica necesaria para la creación del siguiente proyecto.
+La documentación debe servir también como base para la creación de la aplicación mediante Spec Driven Development (SDD).
+No añadas funcionalidades o requisitos que no estén especificados a continuación.
+2. Entregables
+La documentación técnica debe incluir los siguientes apartados:
+2.1. Ficha del proyecto
+Incluir:
+
+Nombre del proyecto.
+Descripción.
+URL del repositorio o ZIP.
+2.2. Descripción general del producto
+Definir:
+
+Objetivo del producto.
+Características principales.
+Funcionalidades principales.
+2.3. Arquitectura del sistema y modelo de datos
+Documentar:
+
+Arquitectura del sistema.
+Componentes principales.
+Relación entre los diferentes componentes.
+Modelo de datos necesario para la aplicación.
+2.4. Historias de usuario y tickets de trabajo
+Crear:
+
+Historias de usuario necesarias para desarrollar la aplicación.
+Tickets de trabajo derivados de las historias de usuario.
+2.5. Stack tecnológico elegido
+Especificar el stack tecnológico seleccionado para desarrollar la aplicación.
+3. Desglose de tareas para el desarrollo
+Además de la documentación anterior, crea un desglose completo de tareas para la creación de la aplicación.
+Este desglose debe estar estructurado de forma que pueda ejecutarse mediante Spec Driven Development (SDD).
+Las tareas deben derivarse de las funcionalidades e historias de usuario definidas anteriormente.
+4. Descripción de la aplicación
+4.1. Definición
+Opina es una aplicación web y red social basada en un sistema de temas sobre los que los usuarios pueden votar.
+La aplicación pretende proporcionar a los usuarios diferentes temas sobre los que opinar.
+La experiencia busca funcionar como una especie de foro, pero de una forma más simplificada y dinámica.
+5. Flujo principal de la aplicación
+5.1. Pantalla principal
+Cuando el usuario entra en la aplicación:
+
+Verá una serie de temas sobre los que puede opinar.
+Los temas aparecerán mediante una lista scrolleable.
+En la parte superior habrá un buscador.
+Mientras el usuario no realice ninguna búsqueda, se mostrarán las mayores tendencias.
+5.2. Acceso a un tema
+Cuando el usuario pulse sobre una de las propuestas/temas:
+
+Entrará dentro del tema.
+Se mostrará el título del tema.
+En caso de que el tema tenga una imagen adjunta, esta aparecerá en la parte superior.
+La imagen ocupará la mitad superior del móvil.
+En la parte inferior aparecerán dos botones:
+Un botón de pulgar arriba de color verde.
+Un botón de pulgar abajo de color rojo.
+5.3. Proceso de votación
+Cuando el usuario pulse uno de los botones de votación:
+
+Se le pedirá una justificación del voto.
+La justificación será opcional, en caso de que el usuario quiera proporcionarla.
+Una vez finalizado el proceso, el usuario emitirá su voto.
+Después de votar, el usuario podrá visualizar:
+El total de votos positivos.
+El total de votos negativos.
+Las opiniones de los usuarios que hayan comentado.
+Los dos botones/cuadrados iniciales se transformarán en una lista de opiniones de los usuarios que hayan comentado.
+Las opiniones se mostrarán:
+
+En verde si el usuario realizó un voto positivo.
+En rojo si el usuario realizó un voto negativo.
+Creación de temas
+Desde el menú principal, los usuarios podrán crear nuevos temas para que el resto de usuarios pueda votarlos.
+Los temas creados por los usuarios podrán ser:
+Públicos.
+Privados.
+6.1. Temas públicos
+Los temas públicos podrán ser accesibles para los usuarios de la aplicación según el funcionamiento general definido anteriormente.
+6.2. Temas privados
+Los temas privados tendrán las siguientes características:
+
+Solo la lista de amigos del usuario que creó el tema podrá acceder a esa votación.
+Los amigos del usuario recibirán una notificación indicando que un amigo ha creado una nueva propuesta.
+Resultado esperado
+Genera una documentación técnica completa del proyecto Opina, utilizando exclusivamente la información proporcionada en este documento.
+La documentación debe:
+Definir el producto y sus funcionalidades.
+Establecer la arquitectura del sistema.
+Definir el modelo de datos.
+Crear las historias de usuario.
+Crear los tickets de trabajo.
+Definir el stack tecnológico.
+Crear un desglose de tareas para desarrollar la aplicación.
+Organizar dicho desglose para que pueda ejecutarse mediante Spec Driven Development (SDD).
+No añadas funcionalidades, requisitos o características que no estén contemplados en la descripción proporcionada.
+
 ## 2026-09-28T16:16:31.208Z
 
 Continua ahora mara completar las 5 tareas que no pudieron completarse
