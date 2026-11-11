@@ -30,6 +30,19 @@ export async function fetchTopicDetail(topicId: string): Promise<TopicDetail> {
   return parseJson<TopicDetail>(response);
 }
 
+/**
+ * Cliente de `DELETE /api/topics/:id` (HU-23, TKT-088): borra un tema propio.
+ * Responde `204` sin cuerpo; un `404` (no existe o no es mío) llega como `ApiError`.
+ */
+export async function deleteTopic(topicId: string): Promise<void> {
+  const response = await apiFetch(`/api/topics/${encodeURIComponent(topicId)}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    await parseJson<never>(response);
+  }
+}
+
 /** Cliente de `POST /api/topics/:id/votes` (TKT-021). */
 export async function castVote({
   topicId,

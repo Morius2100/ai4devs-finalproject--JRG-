@@ -93,7 +93,10 @@ Los tickets se derivan de las historias de usuario ([04-historias-usuario.md](04
 | TKT-084 | BE    | Imágenes de temas privados con URL firmada       | HU-10, HU-11        | 024, 028   | 3      | amistades-y-confidencialidad |
 | TKT-085 | BUILD | Protección del seed y cabeceras de seguridad     | HU-00               | 046, 075   | 2      | amistades-y-confidencialidad |
 | TKT-086 | QA    | Pruebas de confidencialidad                      | HU-00, HU-10, HU-11 | 082–085    | 2      | amistades-y-confidencialidad |
-|         |       |                                                  |                     |            | **177** |           |
+| TKT-087 | BE    | Borrar un tema propio (`DELETE /api/topics/:id`) y `isAuthor` | HU-23  | 016, 024   | 2      | borrar-temas-propios |
+| TKT-088 | FE    | Botón de papelera y diálogo de confirmación      | HU-23               | 087, 017   | 3      | borrar-temas-propios |
+| TKT-089 | QA    | Pruebas del borrado de temas                     | HU-23               | 087–088    | 2      | borrar-temas-propios |
+|         |       |                                                  |                     |            | **184** |           |
 
 ## 5.2 Detalle de tickets
 
@@ -555,6 +558,23 @@ Origen: tarea T6 de la Revisión 1 y [revisión de seguridad](09-revision-seguri
 
 - **Descripción:** `vercel-build.mjs` aborta con `RUN_SEED=1` en producción sin `ALLOW_PRODUCTION_SEED=1`; contraseña del seed por variable fuera de local; cabeceras en `next.config.ts` (CSP primero en `Report-Only`).
 - **Criterios:** escenarios «Credenciales de prueba fuera de producción» y «Cabeceras de seguridad HTTP».
+
+### Borrar temas propios (`borrar-temas-propios`)
+
+#### TKT-087 · Borrar un tema propio y `isAuthor`
+
+- **Descripción:** `TopicService.delete` borra con `deleteMany({ id, authorId })` (`404` si no existe o no es del autor), la cascada de la base de datos elimina votos, notificaciones y visitas, y la imagen se retira del almacenamiento de mejor esfuerzo. `DELETE /api/topics/:id` responde `204`. `getById` añade `isAuthor`.
+- **Criterios:** escenarios «Solo el autor puede borrar su tema» y «Se borra todo lo asociado al tema» de `specs/borrado-temas`, y «El detalle indica si el visitante es el autor» de `specs/detalle-tema`.
+
+#### TKT-088 · Botón de papelera y diálogo de confirmación
+
+- **Descripción:** `DeleteTopicButton` en `TopicView`, solo si `isAuthor`, con el estilo de la aplicación; diálogo `alertdialog` de confirmación; tras borrar se invalidan las consultas y se vuelve a la pantalla de temas.
+- **Criterios:** escenarios de botón, diseño, confirmación, desaparición del tema y error de `specs/borrado-temas`.
+
+#### TKT-089 · Pruebas del borrado de temas
+
+- **Descripción:** integración (permisos y cascada), componentes, e2e y accesibilidad (axe) del borrado.
+- **Criterios:** todos los escenarios de `specs/borrado-temas` cubiertos.
 
 #### TKT-086 · Pruebas de confidencialidad
 

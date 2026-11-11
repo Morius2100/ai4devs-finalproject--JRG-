@@ -296,6 +296,22 @@ Formato: _Como_ <rol>, _quiero_ <acción>, _para_ <beneficio>. Cada historia inc
 - **CA-21.2** El contador de amigos abre mi lista de amigos (la misma que seguidos y seguidores, al ser la amistad mutua), alfabética y con scroll infinito.
 - **CA-21.3** «Mis temas» lista todos mis temas, también los privados, con el selector «Más recientes / Más puntuados».
 
+## E12 · Gestión de mis temas
+
+### HU-23 · Borrar un tema mío
+
+**Como** creador, **quiero** borrar un tema que publiqué desde su pantalla, **para** retirarlo si lo publiqué por error o ya no quiero mostrarlo.
+
+- **Prioridad:** Should · **Estimación:** 3 pts
+- **CA-23.1** En la pantalla de detalle de un tema que he creado aparece un botón con una papelera («Borrar tema») junto al título.
+- **CA-23.2** En los temas creados por otras personas el botón no aparece. Tampoco se ofrece borrar desde tendencias, búsqueda o perfiles.
+- **CA-23.3** El botón sigue el diseño de la aplicación: icono de trazo, forma circular, área táctil de al menos 44 px y colores del tema, en el mismo sitio con o sin imagen.
+- **CA-23.4** Antes de borrar se pide confirmación («¿Borrar este tema?»), con «Cancelar» y «Borrar»; cancelar no cambia nada.
+- **CA-23.5** El servidor solo borra si soy el autor; para cualquier otro caso responde `404`, y `401` sin sesión.
+- **CA-23.6** Se borran también los votos y opiniones, las notificaciones y la imagen del tema.
+- **CA-23.7** Tras borrar vuelvo a la pantalla de temas, el tema desaparece de los listados y su enlace muestra «tema no encontrado».
+- **CA-23.8** Si el borrado falla, el diálogo sigue abierto con un mensaje de error y puedo reintentar o cancelar.
+
 ---
 
 ## Resumen
@@ -325,4 +341,5 @@ Formato: _Como_ <rol>, _quiero_ <acción>, _para_ <beneficio>. Cada historia inc
 | HU-20 | Editar mi foto y descripción    | 5      | E11   |
 | HU-21 | Ver mi perfil, amigos y temas   | 5      | E11   |
 | HU-22 | App de desarrollo en red local  | 8      | E8    |
-|       | **Total**                       | **103** |      |
+| HU-23 | Borrar un tema mío              | 3      | E12   |
+|       | **Total**                       | **106** |      |

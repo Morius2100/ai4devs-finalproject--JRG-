@@ -48,6 +48,7 @@ function makeTopic(overrides: Partial<TopicDetail> = {}): TopicDetail {
     imageUrl: null,
     visibility: "PUBLIC",
     myVote: null,
+    isAuthor: false,
     ...overrides,
   };
 }

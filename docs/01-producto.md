@@ -48,6 +48,7 @@ Permitir que los usuarios expresen y consulten opiniones sobre temas de forma r�
 - Se muestra el título.
 - Si el tema tiene imagen adjunta, aparece en la parte superior ocupando la mitad superior de la pantalla del móvil.
 - En la parte inferior aparecen dos botones: pulgar arriba (verde) y pulgar abajo (rojo).
+- **Borrar un tema propio**: si el tema lo creó el usuario que lo está viendo, junto al título aparece un botón con una papelera. Pide confirmación y, al aceptar, borra el tema con sus votos, opiniones y notificaciones, y vuelve a la pantalla de temas. En los temas de otras personas el botón no aparece, y solo se puede borrar desde esta pantalla (HU-23).
 
 ### F-03 Votación
 
@@ -125,10 +126,11 @@ La descripción original no detalla algunos elementos imprescindibles para que l
 | S-07 | **Notificaciones dentro de la aplicación**                   | No se especifica canal.                                                                                                              | Notificaciones internas listadas en una pantalla de notificaciones accesible desde el menú principal. Sin email ni push.                                                      |
 | S-08 | **Búsqueda por título**                                      | El tema solo tiene título e imagen.                                                                                                  | Coincidencia parcial, sin distinguir mayúsculas/minúsculas, sobre el título.                                                                                                  |
 | S-09 | **App Android con la interfaz empaquetada**                  | Se pide poder usar Opina como app móvil, no solo desde el navegador.                                                                 | APK de Android (Capacitor) con las mismas pantallas y reglas que la web, conectada a la API desplegada. Sesión por token, botón atrás, pantalla de arranque y pantalla «Sin conexión». Cambio `app-movil-empaquetada`. |
+| S-10 | **Borrado de temas propios**                                 | Nada impide hoy retirar un tema publicado por error; el borrado figuraba como fuera de alcance.                                      | Solo el autor, y solo desde el detalle de su tema, con confirmación. Se borran también sus votos, opiniones, notificaciones e imagen, sin aviso a quienes votaron. Cambio `borrar-temas-propios` (HU-23). |
 
 ## 1.7 Fuera de alcance
 
-No forman parte del producto (no se mencionan en la descripción): edición o borrado de temas, cambio o retirada de votos, respuestas a opiniones, "me gusta" en opiniones, bloqueo o denuncia de usuarios, moderación, gestión de cuenta/recuperación de contraseña, categorías o etiquetas, compartir en redes externas, notificaciones por email/push, app para iOS y uso sin conexión (sin red, la app Android solo muestra «Sin conexión»).
+No forman parte del producto (no se mencionan en la descripción): edición de temas, borrado de temas ajenos o desde otra pantalla que no sea el detalle del propio tema, cambio o retirada de votos, respuestas a opiniones, "me gusta" en opiniones, bloqueo o denuncia de usuarios, moderación, gestión de cuenta/recuperación de contraseña, categorías o etiquetas, compartir en redes externas, notificaciones por email/push, app para iOS y uso sin conexión (sin red, la app Android solo muestra «Sin conexión»).
 
 ## 1.8 Cuestiones abiertas
 

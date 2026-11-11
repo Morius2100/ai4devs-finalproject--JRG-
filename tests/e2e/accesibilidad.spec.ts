@@ -86,6 +86,29 @@ test("Tema sin votar y diálogo de justificación (usuario nuevo, sin votos)", a
   await expectNoViolations(page, "Diálogo de justificación");
 });
 
+test("Detalle de mi tema con la papelera y el diálogo de borrado (HU-23)", async ({ page }) => {
+  const runId = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  await page.goto("/registro");
+  await page.getByLabel("Nombre de usuario").fill(`e2eb${runId}`);
+  await page.getByLabel("Email").fill(`e2eb+${runId}@example.com`);
+  await page.getByLabel("Contraseña").fill("password123");
+  await page.getByRole("button", { name: "Crear cuenta" }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.goto("/temas/nuevo");
+  await page.getByLabel("Título").fill(`Tema propio ${runId}`);
+  await page.getByRole("button", { name: "Crear tema" }).click();
+  await expect(page).toHaveURL(/\/tema\?id=[0-9a-f-]{36}$/, { timeout: 10_000 });
+  await expect(page.getByRole("button", { name: "Borrar tema" })).toBeVisible();
+
+  await expectNoViolations(page, "Detalle de mi tema (papelera)");
+
+  await page.getByRole("button", { name: "Borrar tema" }).click();
+  await expect(page.getByRole("alertdialog")).toBeVisible();
+
+  await expectNoViolations(page, "Diálogo de borrado");
+});
+
 test.describe("Pantallas con sesión", () => {
   test.beforeEach(async ({ page }) => {
     await login(page);

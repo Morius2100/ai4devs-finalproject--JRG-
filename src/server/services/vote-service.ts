@@ -108,6 +108,14 @@ export const VoteService = {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
         throw new ConflictError("Ya has votado este tema");
       }
+      // El autor pudo borrar el tema entre la comprobación de acceso y el voto (HU-23):
+      // clave foránea (P2003) o fila inexistente (P2025) → el tema ya no existe.
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        (error.code === "P2003" || error.code === "P2025")
+      ) {
+        throw new NotFoundError("Tema no encontrado");
+      }
       throw error;
     }
   },
