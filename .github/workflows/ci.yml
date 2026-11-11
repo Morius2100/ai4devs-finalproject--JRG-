@@ -19,7 +19,9 @@ env:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    # Imagen fijada: `ubuntu-latest` pasó a Ubuntu 26.04 y `playwright install --with-deps`
+    # fallaba al no poder resolver los servidores de apt. 24.04 es la que Playwright soporta.
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -67,8 +69,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      # apt a veces no resuelve los servidores de Ubuntu desde el ejecutor. Se reintenta y, si
+      # sigue sin responder, se instala solo el navegador (las bibliotecas ya vienen en la imagen
+      # y solo faltarían fuentes). Si faltara algo imprescindible, el fallo saldría al lanzarlo.
       - name: Instalar navegadores de Playwright
-        run: npx playwright install --with-deps chromium
+        run: |
+          for intento in 1 2 3; do
+            npx playwright install --with-deps chromium && exit 0
+            echo "Intento $intento fallido; reintento en 20 s"
+            sleep 20
+          done
+          echo "::warning::apt no responde; se instala solo Chromium, sin dependencias del sistema"
+          npx playwright install chromium
 
       - name: Tests end-to-end
         run: npm run test:e2e
