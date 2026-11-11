@@ -65,7 +65,7 @@ flowchart LR
 | --- | --- | --- | --- | --- |
 | **Local** | `npm run dev` | PostgreSQL 16 en Docker (puerto 5433; bases `opina` y `opina_test`) | MinIO en Docker (9000 y 9001) | `docker compose up -d` |
 | **Local en contenedor** | La aplicación completa (`Dockerfile`) | La misma PostgreSQL de Docker | La misma MinIO | `docker compose --profile app up -d --build` (puerto 3000) |
-| **CI** | Workflow `CI`: job `ci` en `ubuntu-24.04` (`apk` y `docker` en `ubuntu-latest`), Node 22 | PostgreSQL 16 como servicio (`opina_test`), con migraciones y seed | En memoria (`IMAGE_STORAGE=memory`), sin MinIO | Cualquier PR y `push` a `main` |
+| **CI** | Workflow `CI` en `ubuntu-latest`, Node 22 | PostgreSQL 16 como servicio (`opina_test`), con migraciones y seed | En memoria (`IMAGE_STORAGE=memory`), sin MinIO | Cualquier PR y `push` a `main` |
 | **Vista previa** | Despliegue de Vercel por rama o PR | La de Neon configurada para _Preview_ (sin migrar, salvo `RUN_MIGRATIONS=1`) | R2 | Push de una rama |
 | **Producción** | Despliegue de Vercel de `main` | Neon | Cloudflare R2 | Fusionar una PR en `main` |
 | **APK Android** | Interfaz empaquetada con Capacitor | La API de producción | La API (`/api/media`) | Descargar `opina-debug-apk` del CI, o `npm run build:mobile` y `npm run android:apk` |
@@ -78,7 +78,7 @@ Definidos en [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). Se ejecu
 
 ```mermaid
 flowchart TB
-    S["Evento: push a main · pull request"] --> J["Job ci · ubuntu-24.04<br/>servicio postgres:16 con healthcheck"]
+    S["Evento: push a main · pull request"] --> J["Job ci · ubuntu-latest<br/>servicio postgres:16 con healthcheck"]
     J --> A["actions/checkout@v4"]
     A --> B["setup-node@v4 · Node 22 · caché de npm"]
     B --> C["npm ci"]
@@ -129,7 +129,8 @@ Si algo falla, Vercel **no publica** esa versión y la anterior sigue en producc
 | Punto | Estado | Detalle |
 | --- | --- | --- |
 | **CI en rojo desde el primer commit** | **Corregido y en verde en GitHub (9 de noviembre de 2026)** | Fallaba en `npm ci` (lock de npm 11 frente al npm 10 de Node 22). Al regenerar el lock, los pasos siguientes se ejecutaron por primera vez y solo falló un e2e de accesibilidad (esperaba sin asegurarse de que el tema hubiera cargado), ya corregido. |
-| **Instalación de Playwright en el CI** | **Corregida; pendiente de confirmar en GitHub** | El 10 y el 11 de noviembre de 2026 el job `ci` fallaba en `playwright install --with-deps chromium`: `ubuntu-latest` ya era Ubuntu 26.04 y `apt` no resolvía los servidores de Ubuntu, así que los e2e no se ejecutaban. El job `ci` queda fijado en `ubuntu-24.04` y el paso reintenta tres veces y, si `apt` sigue sin responder, instala solo Chromium. Falta ver una ejecución en verde. |
+| **Instalación de Playwright en el CI** | **Mitigada; pendiente de confirmar en GitHub** | El 10 y el 11 de noviembre de 2026 el job `ci` fallaba en `playwright install --with-deps chromium`: `ubuntu-latest` ya era Ubuntu 26.04 y `apt` no resolvía los servidores de Ubuntu, así que los e2e no se ejecutaban. El paso reintenta tres veces y, si `apt` sigue sin responder, instala solo Chromium (las bibliotecas ya vienen en la imagen). Falta ver una ejecución en verde. |
+| **Imagen `ubuntu-24.04` descartada** | Probada el 11 de noviembre de 2026 | Fijar el job `ci` en `ubuntu-24.04` movió el fallo a `next build`: `next/font/google` no pudo procesar la descarga de la fuente Nunito (`TypeError` en el cargador), mientras `apk` y `docker`, en `ubuntu-latest`, compilaban bien en el mismo run. Se volvió a `ubuntu-latest`. El `next build` sigue dependiendo de Google Fonts: alojar la fuente en el repositorio (`next/font/local`) lo eliminaría. |
 | **`main` protegida** | **Preparada, falta importar el _ruleset_** | [`.github/rulesets/main.json`](../.github/rulesets/main.json) lo define. Hay que importarlo a mano (§12.6) y solo cuando el CI esté en verde. |
 | **Contenedor de la aplicación** | **Hecho y verificado en local y en GitHub** | `Dockerfile` y servicio `app`: la imagen se construye (667 MB), arranca sana, corre como usuario `node`, aplica las migraciones y permite registrarse, iniciar sesión y crear un tema con imagen. El job `docker` pasa en GitHub, con las migraciones sobre una base vacía. |
 | **APK en el CI** | **Hecho en GitHub; falta probarla en un móvil** | El job `apk` pasa a la primera y sube `opina-debug-apk`. Falta descargarla, instalarla y comprobar que se conecta al servidor de producción. |

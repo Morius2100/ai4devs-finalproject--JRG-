@@ -19,9 +19,10 @@ env:
 
 jobs:
   ci:
-    # Imagen fijada: `ubuntu-latest` pasó a Ubuntu 26.04 y `playwright install --with-deps`
-    # fallaba al no poder resolver los servidores de apt. 24.04 es la que Playwright soporta.
-    runs-on: ubuntu-24.04
+    # No fijar `ubuntu-24.04`: en esa imagen `next build` falló al descargar la fuente de Google
+    # (`next/font/google`, TypeError en el cargador), mientras que en `ubuntu-latest` (hoy Ubuntu
+    # 26.04) compila. El paso de Playwright de abajo ya tolera que apt no responda.
+    runs-on: ubuntu-latest
 
     services:
       postgres:
